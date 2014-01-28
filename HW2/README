@@ -1,0 +1,31 @@
+HW2 
+Kevin Langer
+EECE5640 
+
+This program does a vector add in three different kernels: 
+
+Compile: 
+    Type make 
+Run: 
+    Sequential kernel:
+        Uses one thread to do a vector add
+        Example: 
+            ./HW2 1000 s
+    Parallel kernel:
+        Uses nthreads to do a vector add. Uses OpenMP; 
+        Example:
+            ./HW2 1000 p 
+    Reduce kernel: 
+        Uses nthreads to do a vector add. Uses OpenMP. 
+        Example:
+            ./HW2 1000 r
+Test:
+    make bench:
+        Tests all configurations outlines above. Produces a CSV. 
+        Does this by running bench.pl
+    make test:
+        tests parellel, modify submit-HW2 to test others. 
+   
+Requires: 
+g++ -fopenmp
+ 

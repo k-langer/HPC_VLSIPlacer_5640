@@ -12,7 +12,10 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(C) $(CFLAGS) -o $@ $^
-
+bench:
+	bsub < submit-bench.sh 
+test:
+	bsub < submit-HW2.sh
 clean:
 	rm -f *.o HW2
 	rm -f core*
