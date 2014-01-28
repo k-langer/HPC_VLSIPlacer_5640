@@ -1,11 +1,12 @@
 C=g++
-CFLAGS=-g -O2 -Wall -std=c++11
+#CFLAGS=-O2 -Wall -std=c++11 -fopenmp
+CFLAGS=-fopenmp
 TARGET=HW2
 
-OBJS = hw2.o
+OBJS = hw2.cpp
 
-%.o: %.c
-	$(C) $(CFLAGS) -c $<
+#%.o: %.c
+#	$(C)$(CFLAGS) -c $<
 
 all: $(TARGET)
 
