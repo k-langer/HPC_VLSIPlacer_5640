@@ -1,5 +1,4 @@
-w 21 16
-r 35
+21 16 35 22 16
 g name=U0 fanout=11 fanin=1 fanin=2
 g name=U1 fanout=10 fanin=3 fanin=4
 g name=U2 fanout=9 fanin=5 fanin=6 
