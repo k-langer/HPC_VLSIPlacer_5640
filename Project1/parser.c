@@ -36,7 +36,11 @@ int main() {
     }
     int i  = 0;
     for (i = 0 ; i < layout->size_gates; i++) {
-        printf("%s\n",layout->all_gates[i].name);
+        printf("%s\n\tFanout: %d\n",layout->all_gates[i].name, 
+            layout->all_gates[i].fanout);
+        for (int j =0; j < layout->all_gates[i].fanin_size; j++) {
+            printf("\tFanin: %d\n",layout->all_gates[i].fanin[j]);
+        }
     }
     return 0;
 }

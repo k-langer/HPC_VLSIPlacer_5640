@@ -7,8 +7,9 @@ typedef struct port {
 } port_t; 
 typedef struct gate {
     char * name; 
-    wire_n fanin; 
+    wire_n * fanin; 
     wire_n fanout; 
+    int fanin_size; 
     int x; 
     int y;
 } gate_t; 
@@ -17,7 +18,8 @@ typedef struct wire {
     port_t * ports; 
     char * name; 
     int num_gates; 
-    int num_ports; 
+    int num_ports;
+    int wirelength;  
 } wire_t; 
 typedef struct layout {
     port_t * all_ports; 

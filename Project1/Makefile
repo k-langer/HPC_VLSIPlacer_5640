@@ -1,5 +1,5 @@
 C=gcc
-CFLAGS=-O0 -Wall -std=c99
+CFLAGS=-O3 -Wall -std=c99 -Wno-unused-result
 CPARFLAGS=-fopenmp
 TARGET=parser
 
