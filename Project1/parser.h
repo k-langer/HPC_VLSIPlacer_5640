@@ -81,7 +81,6 @@ layout_t* parser_addGate(layout_t *layout, char ** init) {
     }
     self_ptr->fanin = malloc(sizeof(wire_n)*fanin_size); 
     self_ptr->fanin_size = fanin_size;
-    printf("faninsize: %d\n", self_ptr->fanin_size);
     memcpy(self_ptr->fanin, fanin_bfr, fanin_size * sizeof(wire_n));
     free(fanin_bfr);
     layout->size_gates += 1;
