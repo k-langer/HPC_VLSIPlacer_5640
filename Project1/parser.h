@@ -1,6 +1,7 @@
 /*str_spit shamelessly stolen from 
 *http://stackoverflow.com/questions/9210528/split-string-with-delimiters-in-c
 */
+extern char *strdup(const char *s);
 char** parser_split(char* a_str, const char a_delim)
 {
     char** result    = 0;
@@ -50,6 +51,18 @@ layout_t* parser_createLayout(layout_t * layout, char ** init) {
     return layout;
 }
 layout_t* parser_addGate(layout_t *layout, char ** init) {
+    int i = 1; 
+    while (init[i]) { 
+        if (strcspn(init[i],"name=") == 0) {
+            int t_len = strlen("name="); 
+            int size = strlen(init[i]) - t_len; 
+            char ** t_ptr = &(layout->all_gates[layout->size_gates].name);
+            *t_ptr = malloc(size); 
+            memcpy(*t_ptr, init[i] + t_len, size);  
+        } 
+        i++;
+    }
+    layout->size_gates += 1;
     return layout; 
 }
 layout_t* parser_addPort(layout_t *layout, char ** init) {

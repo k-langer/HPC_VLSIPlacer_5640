@@ -13,16 +13,16 @@ typedef struct gate {
     int y;
 } gate_t; 
 typedef struct wire { 
-    gate_t ** gates; 
-    port_t ** ports; 
+    gate_t * gates; 
+    port_t * ports; 
     char * name; 
     int num_gates; 
     int num_ports; 
 } wire_t; 
 typedef struct layout {
-    port_t ** all_ports; 
-    gate_t ** all_gates; 
-    wire_t ** all_wires; 
+    port_t * all_ports; 
+    gate_t * all_gates; 
+    wire_t * all_wires; 
     int x_size; 
     int y_size; 
     int size_gates; 
