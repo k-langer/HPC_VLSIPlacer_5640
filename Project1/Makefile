@@ -3,7 +3,8 @@ CFLAGS=-O3 -Wall -std=c99 -Wno-unused-result
 CPARFLAGS=-fopenmp
 TARGET=parser
 
-OBJS = parser.o
+OBJS = parser.o \
+	main.o
 
 all: $(TARGET)
 
