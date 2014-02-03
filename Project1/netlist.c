@@ -60,5 +60,7 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
             maxy = t_y;
         }
     }     
-    return (maxx-minx) + (maxy-miny);
+    int sum = (maxx-minx) + (maxy-miny);
+    wire->wirelength = sum;
+    return sum; 
 }
