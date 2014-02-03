@@ -42,3 +42,6 @@ typedef struct layout {
     gate_t ** grid;
 } layout_t;
 
+int netlist_wireWirelength(layout_t *, wire_n);
+int netlist_layoutWirelength(layout_t *); 
+

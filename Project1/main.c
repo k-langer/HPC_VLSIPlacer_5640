@@ -1,14 +1,17 @@
 #include "netlist.h"
 #include "parser.h"
 #include "common.h" 
+#include "solver.h" 
 
 int main() {
     layout_t *layout = parser_parseNetlist("netlist.txt"); 
     if (!layout) {
         return -1;
     }
+    solver_solve(layout); 
     int i  = 0;
-    
+    int sum = netlist_layoutWirelength(layout); 
+    printf("Wirelength: %d\n",sum); 
     /*
     //Lets test gates
     for (i = 0 ; i < layout->size_gates; i++) {
@@ -19,7 +22,7 @@ int main() {
         }
     }
     */ 
-    
+    /* 
     //lets test wires
     for (i = 0; i < layout->size_wires; i++) {
         wire_t * wire_ptr = &(layout->all_wires[i]); 
@@ -34,7 +37,7 @@ int main() {
         } 
         printf("\tSize: %d\n",wire_ptr->num_gates);
     } 
-    
+    */
     /*
     //Lets test ports 
     for (i = 0; i < layout->size_ports; i++) {

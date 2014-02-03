@@ -27,7 +27,6 @@ layout_t * parser_parseNetlist(char * netlist_n) {
                 default:
                     printf("Something went wrong in parser land"); 
             }
-            printf("%s\n",tokens[0]);
         }
     } else {
         printf ("No valid netlist found\n");

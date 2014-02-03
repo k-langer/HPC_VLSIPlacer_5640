@@ -4,7 +4,9 @@ CPARFLAGS=-fopenmp
 TARGET=placer
 
 OBJS = parser.o \
-	main.o
+	   netlist.o \
+	   solver.o \
+   	   main.o
 
 all: $(TARGET)
 
