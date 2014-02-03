@@ -2,14 +2,15 @@
 #include "parser.h"
 #include "common.h" 
 #include "solver.h" 
+#include "annealer.h"
 
 int main() {
     layout_t *layout = parser_parseNetlist("netlist.txt"); 
     if (!layout) {
         return -1;
     }
-    solver_solve(layout); 
-    int i  = 0;
+    annealer_anneal(layout,0);
+//    int i  = 0;
     int sum = netlist_layoutWirelength(layout); 
     printf("Wirelength: %d\n",sum); 
     /*

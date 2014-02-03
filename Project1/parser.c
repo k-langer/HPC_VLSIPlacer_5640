@@ -57,6 +57,7 @@ layout_t* parser_createLayout(layout_t * layout, char ** init) {
         *buffer = malloc(i/10+2); 
         sprintf(*buffer,"%d",i);
     } 
+    layout->grid = calloc(layout->x_size*layout->y_size,sizeof(gate_t *));
     assert(layout->all_ports);
     assert(layout->all_wires);
     assert(layout->all_gates);

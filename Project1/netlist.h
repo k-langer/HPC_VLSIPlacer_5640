@@ -1,3 +1,5 @@
+#ifndef __netlist__h
+#define __netlist__h
 typedef int wire_n; 
 typedef int gate_n;
 typedef int port_n; 
@@ -44,4 +46,4 @@ typedef struct layout {
 
 int netlist_wireWirelength(layout_t *, wire_n);
 int netlist_layoutWirelength(layout_t *); 
-
+#endif

@@ -1,11 +1,13 @@
 CC=gcc
-CFLAGS=-O0 -Wall -std=c99 -Wno-unused-result
+CFLAGS=-O0 -Wall -std=gnu99 -Wno-unused-result -g 
 CPARFLAGS=-fopenmp
 TARGET=placer
 
 OBJS = parser.o \
-	   netlist.o \
 	   solver.o \
+	   netlist.o \
+	   rand.o \
+	   annealer.o \
    	   main.o
 
 all: $(TARGET)
