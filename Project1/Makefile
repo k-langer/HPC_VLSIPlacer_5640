@@ -1,7 +1,7 @@
 C=gcc
 CFLAGS=-O3 -Wall -std=c99 -Wno-unused-result
 CPARFLAGS=-fopenmp
-TARGET=parser
+TARGET=placer
 
 OBJS = parser.o \
 	main.o
