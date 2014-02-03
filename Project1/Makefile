@@ -13,5 +13,5 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 clean:
-	rm -f *.o parser
+	rm -f *.o parser placer
 	rm -f core*

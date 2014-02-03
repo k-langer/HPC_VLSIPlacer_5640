@@ -1,6 +1,40 @@
 #include "netlist.h"
 #include "parser.h"
 #include "common.h"
+
+layout_t * parser_parseNetlist(char * netlist_n) {
+    FILE * netlist_f;
+    layout_t * layout = calloc(1,sizeof(layout_t));
+    netlist_f = fopen(netlist_n,"r");
+    if (netlist_f) {
+        char *buffer = 0; 
+        size_t buflen = 0; 
+        char ** tokens; 
+        getline(&buffer, &buflen, netlist_f);
+        tokens = parser_split(buffer, ' ');
+        parser_createLayout(layout, tokens);
+        while (getline(&buffer, &buflen, netlist_f) != -1) {
+            tokens = parser_split(buffer, ' ');
+            switch (tokens[0][0]) {
+                case 'p':
+                    parser_addPort(layout,tokens);
+                    break;
+                case 'g':
+                    parser_addGate(layout,tokens); 
+                    break;
+                case '#':
+                    break;
+                default:
+                    printf("Something went wrong in parser land"); 
+            }
+            printf("%s\n",tokens[0]);
+        }
+    } else {
+        printf ("No valid netlist found\n");
+        return NULL; 
+    }
+    return layout;
+}
 /* 
 * Called on the first line of parsing, provides a layout construct
 * Layout construct (layout_t) is a structure that servers the purpose
@@ -42,6 +76,9 @@ void parser_linkGate(layout_t *layout, wire_n wiren, gate_n gaten) {
     //But I can't see why std libs would break this
     memcpy(new_gate_bfr,wire->gates,sizeof(gate_n) * (sz-1)); 
     new_gate_bfr[sz-1] = gaten; 
+    if(wire->gates) {
+        free(wire->gates);
+    }
     wire->gates = new_gate_bfr;
     wire->num_gates += 1;  
 }
@@ -82,8 +119,47 @@ layout_t* parser_addGate(layout_t *layout, char ** init) {
     layout->size_gates += 1;
     return layout; 
 }
-
+void parser_linkPort(layout_t *layout, wire_n wiren, port_n portn) {
+    wire_t * wire = &(layout->all_wires[wiren]); 
+    int sz = wire->num_ports + 1; 
+    port_n * new_port_bfr = malloc(sizeof(port_n) * sz);  
+    //memcpy of 0 bytes is actually undefined behavior
+    //But I can't see why std libs would break this
+    memcpy(new_port_bfr,wire->ports,sizeof(port_n) * (sz-1)); 
+    new_port_bfr[sz-1] = portn;
+    if (wire->ports) {
+        free(wire->ports);
+    } 
+    wire->ports = new_port_bfr;
+    wire->num_ports += 1;  
+}
 layout_t* parser_addPort(layout_t *layout, char ** init) {
+    int i = 1; 
+    port_t * self_ptr = &(layout->all_ports[layout->size_ports]); 
+    while (init[i]) { 
+        if (strstr(init[i],"name=")) {
+            int t_len = strlen("name="); 
+            int size = strlen(init[i]) - t_len; 
+            char ** t_ptr = &(self_ptr->name);
+            *t_ptr = malloc(size); 
+            memcpy(*t_ptr, init[i] + t_len, size);  
+        } else if (strstr(init[i],"x=")) {
+            int x_len = strlen("x="); 
+            int * x = &(self_ptr->x);
+            *x = atoi(init[i]+x_len);
+        } else if (strstr(init[i],"y=")) {
+            int y_len = strlen("y="); 
+            int * y = &(self_ptr->y);
+            *y = atoi(init[i]+y_len);
+        } else if (strstr(init[i],"wire=")) {
+            int t_len = strlen("wire="); 
+            wire_n * fi = &(self_ptr->wire);
+            *fi = atoi(init[i]+t_len);
+            parser_linkPort(layout,*fi,layout->size_ports); 
+        } 
+        i++;
+    }
+    layout->size_ports += 1;
     return layout; 
 }
 /*
