@@ -15,10 +15,10 @@ int main() {
     int sum1 = netlist_layoutWirelength(layout);
     annealer_anneal(layout,sum1);
     int sum = netlist_layoutWirelength(layout);
-    int i  = 0;
     printf("Wirelength: %d %d\n",sum,sum1);
     netlist_printNetlist(layout); 
     /*
+    int i  = 0;
     //Lets test gates
     for (i = 0 ; i < layout->size_gates; i++) {
         printf("%s\n\tFanout: %d\n",layout->all_gates[i].name, 

@@ -1,5 +1,5 @@
-CC=gcc -m32
-CFLAGS=-O0 -Wall -std=gnu99 -Wno-unused-result -g 
+CC=gcc
+CFLAGS=-O0 -D IVYHASWELL -Wall -std=gnu99 -Wno-unused-result -g 
 CPARFLAGS=-fopenmp
 TARGET=placer
 INC=-Iinc/
@@ -14,6 +14,7 @@ all: $(TARGET)
     
 %.o: %.c
 	$(CC) $(INC) $(CFLAGS) -c $<
+
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 clean:
