@@ -24,7 +24,7 @@ typedef struct wire {
     char * name; 
     int num_gates; 
     int num_ports;
-    float wirelength;  
+    int wirelength;  
 } wire_t; 
 /*
 * Layout is a graph. 

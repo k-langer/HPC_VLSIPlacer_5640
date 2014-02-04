@@ -17,7 +17,7 @@ layout_t * annealer_createInitialPlacement(layout_t * layout) {
     }
     return layout;  
 }
-wire_n * swap_gates(layout_t * layout, gate_n gaten, coord_t c2) {
+wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2) {
     int count = 0; 
     gate_t * g1 = &(layout->all_gates[gaten]); 
     gate_t * g2 = layout->grid[c2.x+layout->x_size*c2.y];
@@ -26,7 +26,7 @@ wire_n * swap_gates(layout_t * layout, gate_n gaten, coord_t c2) {
      
     if (g2) {
         g2->x = g1->x; 
-        g2->y = g2->y;
+        g2->y = g1->y;
         count += 1 + g2->fanin_size; 
     }
     g1->x = c2.x;
@@ -49,9 +49,48 @@ wire_n * swap_gates(layout_t * layout, gate_n gaten, coord_t c2) {
     return recalc; 
 }
 layout_t * annealer_anneal(layout_t * layout, int wirelength) {
-    rand_init(); 
     if (!wirelength) {
-        annealer_createInitialPlacement(layout); 
+        annealer_createInitialPlacement(layout);
+        wirelength = netlist_layoutWirelength(layout);  
     }
+    int rand_gate; 
+    coord_t swap_coor,swap_back;  
+    wire_n * recalc; 
+    int count; 
+    int pre_wirelength, post_wirelength;
+    int stall = 0; 
+    while (1) {
+        pre_wirelength = 0;
+        post_wirelength = 0;  
+        count = 0; 
+        rand_rdrand(&rand_gate, layout->size_gates); 
+        rand_rdrand(&(swap_coor.x), layout->x_size);
+        rand_rdrand(&(swap_coor.y), layout->y_size);
+        swap_back.x = layout->all_gates[rand_gate].x;
+        swap_back.y = layout->all_gates[rand_gate].y; 
+        recalc = annealer_swapGates(layout,rand_gate,swap_coor);
+        while (recalc[count]) {
+            pre_wirelength += layout->all_wires[recalc[count]].wirelength;
+            post_wirelength += netlist_wireWirelength(layout,recalc[count]);
+            count++; 
+        }
+        free(recalc); 
+        if (post_wirelength > pre_wirelength) {
+            recalc = annealer_swapGates(layout,rand_gate,swap_back);
+            count = 0; 
+            while (recalc[count]) {
+                netlist_wireWirelength(layout,recalc[count]);
+                count++;
+            }
+            free(recalc);
+        } else if (post_wirelength == pre_wirelength){
+            if ( stall++ > 500) {
+                break;
+            }
+        } else {
+            stall = 0;
+            wirelength -= (pre_wirelength - post_wirelength);        
+        } 
+    }   
     return layout;
 }

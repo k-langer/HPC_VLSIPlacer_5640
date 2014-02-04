@@ -5,7 +5,7 @@ from Tkinter import Tk, Canvas, Frame, BOTH, W
 import re, sys, os
 
 scale_c = 40 
-margin =40
+margin =60
 
 class Draw_Layout(Frame):
   
@@ -15,9 +15,9 @@ class Draw_Layout(Frame):
         self.gates = gates
         self.ports = ports
         self.parent = parent        
-        self.initUI()
+        self.draw()
         
-    def initUI(self):
+    def draw(self):
       
         self.parent.title("Layout")        
         self.pack(fill=BOTH, expand=1)
@@ -28,7 +28,6 @@ class Draw_Layout(Frame):
         canvas.create_rectangle(margin, margin, \
             (x_size), (y_size), \
             outline="#fff", fill="#fff")
-
         for gate in self.gates:
             bry = y_size - gate[2]*scale_c
             tly = bry - scale_c
@@ -41,9 +40,19 @@ class Draw_Layout(Frame):
                 anchor=W,font="Helvetica",\
                 text=gate[0])
         for port in self.ports:
-            bry = y_size - port[2]*scale_c
+            y_fix_port = 0; 
+            x_fix_port = 0; 
+            if (port[2] >= self.grid[1]-1):
+                y_fix_port = -scale_c
+            if (port[2] <= 1):
+                y_fix_port = scale_c
+            if(port[1] >= self.grid[0]-1):
+                x_fix_port = scale_c
+            if(port[1] <= 1):
+                x_fix_port = -scale_c
+            bry = y_size - port[2]*scale_c+y_fix_port
             tly = bry - scale_c
-            brx = port[1]*scale_c+margin
+            brx = port[1]*scale_c+margin+x_fix_port
             tlx = brx + scale_c                
             canvas.create_rectangle(tlx, tly, brx, bry,
                 outline="black", fill="green")
