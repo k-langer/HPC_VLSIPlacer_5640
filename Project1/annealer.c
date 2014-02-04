@@ -18,6 +18,7 @@ layout_t * annealer_createInitialPlacement(layout_t * layout) {
     return layout;  
 }
 layout_t * annealer_anneal(layout_t * layout, int wirelength) {
+    rand_init(); 
     if (!wirelength) {
         annealer_createInitialPlacement(layout); 
     }

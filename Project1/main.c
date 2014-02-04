@@ -12,7 +12,8 @@ int main() {
     annealer_anneal(layout,0);
 //    int i  = 0;
     int sum = netlist_layoutWirelength(layout); 
-    printf("Wirelength: %d\n",sum); 
+    printf("Wirelength: %d\n",sum);
+    netlist_printNetlist(layout); 
     /*
     //Lets test gates
     for (i = 0 ; i < layout->size_gates; i++) {

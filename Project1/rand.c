@@ -5,8 +5,15 @@ https://idea.popcount.org/2013-03-25-hardware-entropy-rdrand/
 */
 
 #include "rand.h"
+int rand_init() {
+    #ifndef IVYHASWELL
+    srand(time(NULL));
+    #endif
+    return TRUE; 
+}
 
 int rand_rdrand(int *v, int range) {
+   #ifdef IVYHASWELL
    int ok;
    asm volatile("1: " RDRAND_LONG "\n\t"
              "jc 2f\n\t"
@@ -17,6 +24,9 @@ int rand_rdrand(int *v, int range) {
              : "0" (RDRAND_RETRY_LOOPS));
    *v = (((unsigned int)*v>>16)*range)>>16;
    return ok;
+   #endif
+   *v = rand()%range;  
+   return TRUE;
 }
 
 

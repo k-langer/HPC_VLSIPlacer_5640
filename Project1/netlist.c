@@ -64,3 +64,22 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     wire->wirelength = sum;
     return sum; 
 }
+void netlist_printNetlist(layout_t * layout) {
+    FILE *fp = fopen("display/layout.txt", "ab+");
+    fprintf(fp,"x_size%dy_size%d\n",layout->x_size,layout->y_size); 
+    gate_t * tmp_gate; 
+    port_t * tmp_port; 
+    for (int i = 0; i < layout->size_gates; i++) {
+        tmp_gate = &(layout->all_gates[i]);
+        if (tmp_gate->name) { 
+            fprintf(fp,"gatename%sx%dy%d\n"
+                ,tmp_gate->name,tmp_gate->x,tmp_gate->y);
+        }
+    }
+    for (int i = 0; i < layout->size_ports; i++) {
+        tmp_port = &(layout->all_ports[i]); 
+        if (tmp_port->name) {
+            fprintf(fp,"portname%sx%dy%d\n",tmp_port->name,tmp_port->x,tmp_port->y);
+        }
+    }   
+}

@@ -46,4 +46,5 @@ typedef struct layout {
 
 int netlist_wireWirelength(layout_t *, wire_n);
 int netlist_layoutWirelength(layout_t *); 
+void netlist_printNetlist(layout_t*); 
 #endif

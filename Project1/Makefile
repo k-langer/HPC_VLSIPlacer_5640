@@ -19,3 +19,4 @@ $(TARGET): $(OBJS)
 clean:
 	rm -f *.o parser placer
 	rm -f core*
+	rm -f display/layout.txt
