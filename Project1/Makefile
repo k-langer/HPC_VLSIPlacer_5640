@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-O0 -Wall -std=gnu99
+CFLAGS=-O3 -Wall -std=gnu99 -Wno-unused-result
 DEBUG=-g 
 CPARFLAGS=-fopenmp
 RDRAND=-D IVYHASWELL
