@@ -1,6 +1,8 @@
 CC=gcc
-CFLAGS=-O0 -D IVYHASWELL -Wall -std=gnu99 -Wno-unused-result -g 
+CFLAGS=-O0 -Wall -std=gnu99
+DEBUG=-g 
 CPARFLAGS=-fopenmp
+RDRAND=-D IVYHASWELL
 TARGET=placer
 INC=-Iinc/
 OBJS = parser.o \
@@ -13,10 +15,10 @@ OBJS = parser.o \
 all: $(TARGET)
     
 %.o: %.c
-	$(CC) $(INC) $(CFLAGS) -c $<
+	$(CC) $(INC) $(CFLAGS) $(RDRAND) $(DEBUG) -c $<
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(RDRAND) $(DEBUG) -o $@ $^
 clean:
 	rm -f *.o parser placer
 	rm -f core*
