@@ -65,7 +65,7 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     return sum; 
 }
 void netlist_printNetlist(layout_t * layout) {
-    FILE *fp = fopen("display/layout.txt", "ab+");
+    FILE *fp = fopen("display/layout.txt", "w+");
     fprintf(fp,"x_size%dy_size%d\n",layout->x_size,layout->y_size); 
     gate_t * tmp_gate; 
     port_t * tmp_port; 

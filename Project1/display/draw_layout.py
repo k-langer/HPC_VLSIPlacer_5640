@@ -5,7 +5,7 @@ from Tkinter import Tk, Canvas, Frame, BOTH, W
 import re, sys, os
 
 scale_c = 40 
-margin =60
+margin =40
 
 class Draw_Layout(Frame):
   
@@ -60,8 +60,8 @@ def main():
     gates = []
     ports = [] 
     root = Tk()
-    layout_fl = open(os.path.abspath('')+\
-        "/layout.txt","r")
+    layout_fl = open(os.path.dirname(os.path.abspath(__file__)) \
+        + "/layout.txt","r")
     for ln in layout_fl:
         is_match = re.match(r"x_size(\d+)y_size(\d+)",ln)
         if (is_match):

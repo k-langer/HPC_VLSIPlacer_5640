@@ -9,6 +9,7 @@ int main() {
     if (!layout) {
         return -1;
     }
+    printf("Name: %s\n",layout->all_gates[21].name); 
     annealer_anneal(layout,0);
 //    int i  = 0;
     int sum = netlist_layoutWirelength(layout); 

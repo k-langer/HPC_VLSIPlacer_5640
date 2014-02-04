@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -m32
 CFLAGS=-O0 -Wall -std=gnu99 -Wno-unused-result -g 
 CPARFLAGS=-fopenmp
 TARGET=placer
@@ -19,4 +19,3 @@ $(TARGET): $(OBJS)
 clean:
 	rm -f *.o parser placer
 	rm -f core*
-	rm -f display/layout.txt

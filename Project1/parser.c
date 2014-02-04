@@ -96,7 +96,7 @@ layout_t* parser_addGate(layout_t *layout, char ** init) {
             int t_len = strlen("name="); 
             int size = strlen(init[i]) - t_len; 
             char ** t_ptr = &(self_ptr->name);
-            *t_ptr = malloc(size); 
+            *t_ptr = calloc(sizeof(char),size); 
             memcpy(*t_ptr, init[i] + t_len, size);  
         } else if (strstr(init[i],"fanin=")) {
             assert(fanin_size < 20); 
