@@ -18,9 +18,9 @@ main(int argc, char **argv ) {
     printf( "%.13s from langer.k %d\n", message,rank);
     end_time = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Finalize();
     if (rank == 0) { 
         printf("Took %f\n", end_time-start_time);
     } 
+    MPI_Finalize();
 }
   

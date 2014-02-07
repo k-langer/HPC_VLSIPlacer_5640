@@ -2,7 +2,7 @@
 #BSUB -J submit-bench
 #BSUB -o bench.csv
 #BSUB -e error_file
-#BSUB -n 32
+#BSUB -n 20
 #BSUB -q ht-10g
 #BSUB cwd ~/EECE5640/HW2
 work=~/EECE5640/HW2

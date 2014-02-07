@@ -4,17 +4,17 @@
 #include <sys/time.h>
 #include <omp.h>
 
-unsigned long sequential (std::vector<unsigned long> vect1, unsigned long size) {
+unsigned long sequential (const std::vector<unsigned long> & vect1, unsigned long size) {
     unsigned long totsum = 0; 
     /*printf("Threads: 1\n"); */
     //Simply add up all values in the vector
     for (int i = 0; i < size; i++) {
-        totsum += vect1[i]; 
+        totsum += (vect1)[i]; 
     }
     return totsum; 
 }
 
-unsigned long parallel (std::vector<unsigned long> vect1, unsigned long size) {
+unsigned long parallel (const std::vector<unsigned long> & vect1, unsigned long size) {
     int nthreads, tid;
     unsigned long totsum = 0; 
     unsigned long p_totsum = 0;
@@ -34,7 +34,7 @@ unsigned long parallel (std::vector<unsigned long> vect1, unsigned long size) {
         //The idea here is to split up the adds into nthread adds. 
         // The condition in the while loop prevents any thread from going out of bounds
         while (i+tid < size) {
-            p_totsum += vect1[i+tid];
+            p_totsum += (vect1)[i+tid];
             //This indexing prevents any overlapping adds
             i+= nthreads; 
         }
@@ -45,12 +45,12 @@ unsigned long parallel (std::vector<unsigned long> vect1, unsigned long size) {
     return totsum; 
 }
 
-unsigned long reduce (std::vector<unsigned long> vect1, unsigned long size) {
+unsigned long reduce (const std::vector<unsigned long> & vect1, unsigned long size) {
     unsigned long totsum = 0; 
     //Simply using the reduction pragma provided by openmp
     #pragma omp parallel for reduction (+:totsum)
         for (int i = 0; i < size; i++) {
-            totsum = totsum + vect1[i];
+            totsum = totsum + (vect1)[i];
         }
     return totsum; 
 }

@@ -1,8 +1,8 @@
 #! /bin/sh 
 #BSUB -J Q2-HW3-Langer
-#BSUB -o logs/output.txt
+#BSUB -o logs/Q2-20.txt
 #BSUB -e logs/error_file
-#BSUB -n 40
+#BSUB -n 20
 #BSUB -q ht-10g
 #BSUB cwd ~/EECE5640/HW3
 work=~/EECE5640/HW3
@@ -22,6 +22,6 @@ for ((i=0; i<${#hosts[@]}; i += 2)) ;
  echo $HOST:$CORE >> $tempfile2 
 done 
 
-mpirun -np 40 -prot -TCP -lsf ./Q2
+mpirun -np 20 -prot -TCP -lsf ./Q2
 
 #watch output.txt
