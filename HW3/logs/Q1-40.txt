@@ -1,0 +1,120 @@
+Sender: LSF System <lsfadmin@compute-0-004>
+Subject: Job 102229: <submit-bench> in cluster <mghpcc_cluster1> Done
+
+Job <submit-bench> was submitted from host <compute-0-005> by user <langer.k> in cluster <mghpcc_cluster1>.
+Job was executed on host(s) <30*compute-0-004>, in queue <ht-10g>, as user <langer.k> in cluster <mghpcc_cluster1>.
+                            <10*compute-0-005>
+</home/langer.k> was used as the home directory.
+</home/langer.k/EECE5640/HW3> was used as the working directory.
+Started at Thu Feb  6 23:47:49 2014
+Results reported at Thu Feb  6 23:47:50 2014
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#! /bin/sh 
+#BSUB -J submit-bench
+#BSUB -o logs/output.txt
+#BSUB -e logs/error_file
+#BSUB -n 40
+#BSUB -q ht-10g
+#BSUB cwd ~/EECE5640/HW3
+work=~/EECE5640/HW3
+cd $work
+mkdir -p logs 
+
+tempfile1=.hostlistrun 
+tempfile2=.hostlist-tcp 
+
+echo $LSB_MCPU_HOSTS > $tempfile1 
+declare -a hosts 
+read -a hosts < ${tempfile1} 
+for ((i=0; i<${#hosts[@]}; i += 2)) ; 
+ do 
+ HOST=${hosts[$i]} 
+ CORE=${hosts[(($i+1))]} 
+ echo $HOST:$CORE >> $tempfile2 
+done 
+
+mpirun -np 40 -prot -TCP -lsf ./Q1
+
+#watch output.txt
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :               15.61 sec.
+    Max Memory :             4 MB
+    Average Memory :         4.00 MB
+    Total Requested Memory : -
+    Delta Memory :           -
+    (Delta: the difference between total requested memory and actual max usage.)
+    Max Swap :               37 MB
+
+    Max Processes :          1
+    Max Threads :            1
+
+The output (if any) follows:
+
+Host 0 -- ip 10.100.8.44 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.45 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Hello, world from langer.k 0
+Hello, world from langer.k 20
+Hello, world from langer.k 30
+Hello, world from langer.k 10
+Hello, world from langer.k 17
+Hello, world from langer.k 14
+Hello, world from langer.k 13
+Hello, world from langer.k 8
+Hello, world from langer.k 21
+Hello, world from langer.k 3
+Hello, world from langer.k 18
+Hello, world from langer.k 9
+Hello, world from langer.k 15
+Hello, world from langer.k 26
+Hello, world from langer.k 22
+Hello, world from langer.k 27
+Hello, world from langer.k 25
+Hello, world from langer.k 28
+Hello, world from langer.k 6
+Hello, world from langer.k 11
+Hello, world from langer.k 24
+Hello, world from langer.k 5
+Hello, world from langer.k 4
+Hello, world from langer.k 23
+Hello, world from langer.k 19
+Hello, world from langer.k 12
+Hello, world from langer.k 16
+Hello, world from langer.k 1
+Hello, world from langer.k 2
+Hello, world from langer.k 31
+Hello, world from langer.k 32
+Hello, world from langer.k 38
+Hello, world from langer.k 34
+Hello, world from langer.k 35
+Hello, world from langer.k 37
+Hello, world from langer.k 36
+Hello, world from langer.k 39
+Hello, world from langer.k 33
+Hello, world from langer.k 7
+Hello, world from langer.k 29
+Took 0.081470
+
+
+PS:
+
+Read file <logs/error_file> for stderr output of this job.
+
