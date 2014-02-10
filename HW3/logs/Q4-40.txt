@@ -1,0 +1,178 @@
+Sender: LSF System <lsfadmin@compute-0-006>
+Subject: Job 102450: <Q4-HW3-Langer> in cluster <mghpcc_cluster1> Done
+
+Job <Q4-HW3-Langer> was submitted from host <compute-0-006> by user <langer.k> in cluster <mghpcc_cluster1>.
+Job was executed on host(s) <30*compute-0-006>, in queue <ht-10g>, as user <langer.k> in cluster <mghpcc_cluster1>.
+                            <10*compute-0-007>
+</home/langer.k> was used as the home directory.
+</home/langer.k/EECE5640/HW3> was used as the working directory.
+Started at Fri Feb  7 03:56:50 2014
+Results reported at Fri Feb  7 03:57:19 2014
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#! /bin/sh 
+#BSUB -J Q4-HW3-Langer
+#BSUB -o logs/Q4-40.txt
+#BSUB -e logs/error_file
+#BSUB -n 40
+#BSUB -q ht-10g
+#BSUB cwd ~/EECE5640/HW3
+work=~/EECE5640/HW3
+cd $work
+mkdir -p logs 
+
+tempfile1=.hostlistrun 
+tempfile2=.hostlist-tcp 
+
+echo $LSB_MCPU_HOSTS > $tempfile1 
+declare -a hosts 
+read -a hosts < ${tempfile1} 
+for ((i=0; i<${#hosts[@]}; i += 2)) ; 
+ do 
+ HOST=${hosts[$i]} 
+ CORE=${hosts[(($i+1))]} 
+ echo $HOST:$CORE >> $tempfile2 
+done 
+
+mpirun -np 40 -prot -TCP -lsf ./Q4 100
+mpirun -np 40 -prot -TCP -lsf ./Q4 1000
+mpirun -np 40 -prot -TCP -lsf ./Q4 10000
+mpirun -np 40 -prot -TCP -lsf ./Q4 100000
+mpirun -np 40 -prot -TCP -lsf ./Q4 1000000
+mpirun -np 40 -prot -TCP -lsf ./Q4 10000000
+mpirun -np 40 -prot -TCP -lsf ./Q4 100000000
+mpirun -np 40 -prot -TCP -lsf ./Q4 1000000000
+#watch output.txt
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :               933.23 sec.
+    Max Memory :             38 MB
+    Average Memory :         4.00 MB
+    Total Requested Memory : -
+    Delta Memory :           -
+    (Delta: the difference between total requested memory and actual max usage.)
+    Max Swap :               2767 MB
+
+    Max Processes :          12
+    Max Threads :            12
+
+The output (if any) follows:
+
+Host 0 -- ip 10.100.8.46 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.47 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Sum: 5050
+Time: 24.800062
+Host 0 -- ip 10.100.8.46 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.47 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Sum: 500500
+Time: 122.807980
+Host 0 -- ip 10.100.8.46 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.47 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Sum: 50005000
+Time: 137.125969
+Host 0 -- ip 10.100.8.46 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.47 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Sum: 5000050000
+Time: 65.814972
+Host 0 -- ip 10.100.8.46 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.47 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Sum: 500000500000
+Time: 8.912086
+Host 0 -- ip 10.100.8.46 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.47 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Sum: 50000005000000
+Time: 72.283983
+Host 0 -- ip 10.100.8.46 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.47 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Sum: 5000000050000000
+Time: 417.619944
+Host 0 -- ip 10.100.8.46 -- ranks 0 - 29
+Host 1 -- ip 10.100.8.47 -- ranks 30 - 39
+
+ host | 0    1
+======|===========
+    0 : SHM  TCP
+    1 : TCP  SHM
+
+ Prot -  All Intra-node communication is: SHM
+ Prot -  All Inter-node communication is: TCP
+
+Sum: 500000000500000000
+Time: 3011.299133
+
+
+PS:
+
+Read file <logs/error_file> for stderr output of this job.
+
