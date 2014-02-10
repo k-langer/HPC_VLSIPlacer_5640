@@ -14,7 +14,7 @@ $nl->link();
 $nl->lint();
 $nl->exit_if_error();
 
-
+my $scale = 1;
 my $netNumber = 0; 
 my %netRename = ();
 my %netCount = ();
@@ -27,8 +27,9 @@ $netRename{"vdd"} = 0;
 $netRename{"reset"} = 0;
 $netRename{"clk"} = 0;
 $netRename{"gnd"} = 0; 
-for my $mod ( $nl->top_modules_sorted() ) {
+for my $mod ( $nl->modules() ) {
    show_hier($mod, '', '');
+   last;
 }
 print $x . " " . $y . " " . $wire_count . " " . $cell_count . " ". $port_count . "\n";
 #for my $values ( keys %netCount ) {
@@ -88,10 +89,10 @@ sub show_hier {
                 $p_x = 0;
                 if ($sig->direction() eq "out") {
                     $p_x = $x;
-                    $p_yo += 5;
+                    $p_yo += $scale;
                     print ' y=',$p_yo;
                 } else {
-                    $p_yi +=5;
+                    $p_yi +=$scale;
                     print ' y=',$p_yi;
                 }
                 print ' x=',$p_x,"\n";
@@ -103,10 +104,10 @@ sub show_hier {
             $p_x = 0;
             if ($sig->direction() eq "out") {
                 $p_x = $x;
-                $p_yo += 5;
+                $p_yo += $scale;
                 print ' y=',$p_yo;
             } else {
-                    $p_yi +=5;
+                    $p_yi +=$scale;
                     print ' y=',$p_yi;
             }
             print ' x=',$p_x,"\n";
