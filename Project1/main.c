@@ -28,9 +28,9 @@ int main() {
         }
     }
     */ 
-    /* 
+     /*
     //lets test wires
-    for (i = 0; i < layout->size_wires; i++) {
+    for (int i = 0; i < layout->size_wires; i++) {
         wire_t * wire_ptr = &(layout->all_wires[i]); 
         printf("Wire: %s\n",wire_ptr->name);
         for ( int j = 0; j < wire_ptr->num_gates; j++){
@@ -41,7 +41,7 @@ int main() {
             port_n gtn = wire_ptr->ports[j];
             printf("\tP: %s\n",layout->all_ports[gtn].name);
         } 
-        printf("\tSize: %d\n",wire_ptr->num_gates);
+        printf("\tLength: %d\n",wire_ptr->wirelength);
     } 
     */
     /*

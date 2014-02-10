@@ -19,6 +19,7 @@ https://idea.popcount.org/2013-03-25-hardware-entropy-rdrand/
 #endif
 
 int rand_init();
+double rand_rdrand1();
 int rand_rdrand(int *v, int range);
 
 #endif

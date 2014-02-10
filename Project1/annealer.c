@@ -1,5 +1,6 @@
 #include "annealer.h"
 #include "rand.h"
+#include "common.h" 
 layout_t * annealer_createInitialPlacement(layout_t * layout) {
     int x_b = layout->x_size; 
     int y_b = layout->y_size; 
@@ -53,29 +54,38 @@ layout_t * annealer_anneal(layout_t * layout, int wirelength) {
         annealer_createInitialPlacement(layout);
         wirelength = netlist_layoutWirelength(layout);  
     }
+    return annealer_simulatedAnnealing(layout,wirelength,1000.0);
+}
+bool_t annealer_acceptSwap(int deltaL, double T) {
+    return (exp(deltaL/T) > rand_rdrand1());
+}
+layout_t * annealer_simulatedAnnealing(
+    layout_t * layout, int wirelength,double tempature) {
     int rand_gate; 
     coord_t swap_coor,swap_back;  
     wire_n * recalc; 
     int count; 
     int pre_wirelength, post_wirelength;
     int stall = 0; 
+    int deltaT; 
     while (1) {
         pre_wirelength = 0;
         post_wirelength = 0;  
-        count = 0; 
         rand_rdrand(&rand_gate, layout->size_gates); 
         rand_rdrand(&(swap_coor.x), layout->x_size);
         rand_rdrand(&(swap_coor.y), layout->y_size);
         swap_back.x = layout->all_gates[rand_gate].x;
         swap_back.y = layout->all_gates[rand_gate].y; 
         recalc = annealer_swapGates(layout,rand_gate,swap_coor);
+        count = 0; 
         while (recalc[count]) {
             pre_wirelength += layout->all_wires[recalc[count]].wirelength;
             post_wirelength += netlist_wireWirelength(layout,recalc[count]);
             count++; 
         }
-        free(recalc); 
-        if (post_wirelength > pre_wirelength) {
+        free(recalc);
+        deltaT = pre_wirelength - post_wirelength;  
+        if (deltaT < 0 && !annealer_acceptSwap(deltaT,tempature)) {
             recalc = annealer_swapGates(layout,rand_gate,swap_back);
             count = 0; 
             while (recalc[count]) {
@@ -83,13 +93,17 @@ layout_t * annealer_anneal(layout_t * layout, int wirelength) {
                 count++;
             }
             free(recalc);
-        } else if (post_wirelength == pre_wirelength){
-            if ( stall++ > 500) {
-                break;
-            }
         } else {
-            stall = 0;
-            wirelength -= (pre_wirelength - post_wirelength);        
+            if (deltaT == 0 && stall++ > 500) {
+                break;
+            } else if (deltaT > 0) {
+                stall = 0;
+                if (tempature > 0.01) {
+                    tempature/=1.01;
+                }
+            }
+            wirelength -= deltaT;  
+            //printf("WL: %d T %f\n",wirelength,tempature);
         } 
     }   
     return layout;

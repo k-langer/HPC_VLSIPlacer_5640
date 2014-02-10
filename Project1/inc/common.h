@@ -6,8 +6,10 @@
 #include <string.h>
 #include <assert.h>
 #include <time.h>
+#include <math.h>
 #define PASS 0
 #define FAIL -1
 #define TRUE 1
 #define FALSE 0
+typedef char bool_t;
 #endif

@@ -36,4 +36,4 @@ p name=P11 x=20 y=10 wire=31
 p name=P12 x=20 y=9 wire=32
 p name=P13 x=20 y=6 wire=33
 p name=P14 x=20 y=3 wire=34
-p name=P15 x=20 y=1 wire=24
+p name=P15 wire=24 y=1 x=20
