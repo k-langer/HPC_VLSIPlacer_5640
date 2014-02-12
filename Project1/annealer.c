@@ -54,7 +54,7 @@ layout_t * annealer_anneal(layout_t * layout, int wirelength) {
         annealer_createInitialPlacement(layout);
         wirelength = netlist_layoutWirelength(layout);  
     }
-    return annealer_simulatedAnnealing(layout,wirelength,1000.0);
+    return annealer_simulatedAnnealing(layout,wirelength,200.0);
 }
 bool_t annealer_acceptSwap(int deltaL, double T) {
     return (exp(deltaL/T) > rand_rdrand1());
@@ -68,6 +68,7 @@ layout_t * annealer_simulatedAnnealing(
     int pre_wirelength, post_wirelength;
     int stall = 0; 
     int deltaT; 
+    int printWL = 100000000;
     while (1) {
         pre_wirelength = 0;
         post_wirelength = 0;  
@@ -98,12 +99,17 @@ layout_t * annealer_simulatedAnnealing(
                 break;
             } else if (deltaT > 0) {
                 stall = 0;
-                if (tempature > 0.01) {
-                    tempature/=1.01;
+                if (tempature > 0.001) {
+                    tempature-=0.0001;
+                } else {
+                    tempature = 0;
                 }
             }
-            wirelength -= deltaT;  
-            //printf("WL: %d T %f\n",wirelength,tempature);
+            wirelength -= deltaT; 
+            if (printWL > wirelength + 10000) {
+                printWL = wirelength;  
+                printf("WL: %d T %f\n",printWL,tempature);
+            }
         } 
     }   
     return layout;
