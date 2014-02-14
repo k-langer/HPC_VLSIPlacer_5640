@@ -4,8 +4,8 @@
 #include "solver.h" 
 #include "annealer.h"
 #include "rand.h"
-int main() {
-    layout_t *layout = parser_parseNetlist("netlist.txt"); 
+int main(int argc, char**argv) {
+    layout_t *layout = parser_parseNetlist(argv[1]); 
     if (!layout) {
         return -1;
     }
