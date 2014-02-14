@@ -13,6 +13,9 @@
 */
 layout_t * parser_parseNetlist(char * netlist_n) {
     FILE * netlist_f;
+    if (netlist_n == NULL) {
+        netlist_n = "netlist.txt";
+    }
     netlist_f = fopen(netlist_n,"r");
     layout_t * layout; 
     if (netlist_f) {

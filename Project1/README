@@ -9,7 +9,7 @@ Install:
     - make 
 
 Run:
-    ./placer 
+    ./placer netlist.txt
 
 View results:
     ./display/draw_layout.py 
@@ -21,3 +21,9 @@ Create your own input file:
     and give it two arguments, the filename of a 
     structural verilog file and the top verilog 
     module in the structural verilog file.  
+
+Netlist Grammar: 
+    {x_size} {y_size} {num_gates} {num_wires} {num_ports}
+    g name={name} fanin={wire} fanout={wire} fanin={wire} ...
+    p name={name} wire={wire} x={x coordinate} y={y coordiante}
+    w name={name} hier={module hierarchy} weight={critical signal weight}
