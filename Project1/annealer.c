@@ -1,6 +1,14 @@
 #include "annealer.h"
 #include "rand.h"
-#include "common.h" 
+#include "common.h"
+/*All code my own, but ideas from UIUC /VLSI CAD: Logic to Layout/
+ *its a great Coursera course. highly recommend it 
+*/
+
+/*The annealer, as written must start with a placement. 
+ *As a result, this function creates a random placement. 
+ *This placement is terrible, and will be improved upon
+*/
 layout_t * annealer_createInitialPlacement(layout_t * layout) {
     int x_b = layout->x_size; 
     int y_b = layout->y_size; 
@@ -18,6 +26,10 @@ layout_t * annealer_createInitialPlacement(layout_t * layout) {
     }
     return layout;  
 }
+/*
+* Swap a gate in the layout (specified with gate pointer gaten) with 
+* any coord on the grid in layout. Note, everything must snap to grid
+*/
 wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2) {
     int count = 0; 
     gate_t * g1 = &(layout->all_gates[gaten]); 
@@ -49,6 +61,11 @@ wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2) {
     }    
     return recalc; 
 }
+/*
+* Wrapper function for the annealing. 
+* -Creates placement if needed
+* -Sets the initial tempature for annealing
+*/
 layout_t * annealer_anneal(layout_t * layout, int wirelength) {
     if (!wirelength) {
         annealer_createInitialPlacement(layout);
@@ -56,9 +73,20 @@ layout_t * annealer_anneal(layout_t * layout, int wirelength) {
     }
     return annealer_simulatedAnnealing(layout,wirelength,200.0);
 }
+/*
+ * Use probablity magic to determine if a adverse swap is accepted
+ * T is assumed to be > 0 and deltaL is assumed to be >= 0
+*/
 bool_t annealer_acceptSwap(int deltaL, double T) {
     return (exp(deltaL/T) > rand_rdrand1());
 }
+/* Do the annealing. Swap randomly. Accept all swaps that impove
+ * placement. Accept negative swaps that pass the acceptSwap test
+ * based on their probalities and effect. Quit out of the loop
+ * after 500 consequtive stalls defined as swaps that do not change
+ * state of netlist. 
+ * TODO: Better pick tempature value and stall value for max QoR
+*/
 layout_t * annealer_simulatedAnnealing(
     layout_t * layout, int wirelength,double tempature) {
     int rand_gate; 
@@ -77,6 +105,7 @@ layout_t * annealer_simulatedAnnealing(
         rand_rdrand(&(swap_coor.y), layout->y_size);
         swap_back.x = layout->all_gates[rand_gate].x;
         swap_back.y = layout->all_gates[rand_gate].y; 
+        //Make a random swap
         recalc = annealer_swapGates(layout,rand_gate,swap_coor);
         count = 0; 
         while (recalc[count]) {
@@ -87,6 +116,8 @@ layout_t * annealer_simulatedAnnealing(
         free(recalc);
         deltaT = pre_wirelength - post_wirelength;  
         if (deltaT < 0 && !annealer_acceptSwap(deltaT,tempature)) {
+            //Swap back rejects
+            //TODO: optimize this 
             recalc = annealer_swapGates(layout,rand_gate,swap_back);
             count = 0; 
             while (recalc[count]) {
@@ -106,6 +137,7 @@ layout_t * annealer_simulatedAnnealing(
                 }
             }
             wirelength -= deltaT; 
+            //Display after 10k changes
             if (printWL > wirelength + 10000) {
                 printWL = wirelength;  
                 printf("WL: %d T %f\n",printWL,tempature);

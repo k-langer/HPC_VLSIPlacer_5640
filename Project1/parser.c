@@ -1,7 +1,16 @@
 #include "netlist.h"
 #include "parser.h"
 #include "common.h"
-
+/*
+* Given a file name of a netlist, take a parse that netlist 
+* into a layout_t data structure. The layout is a block of 
+* gates, wires, and ports that are linked together in a graph
+* Also contains layout metadata such as size.
+* 
+* Note: file type of input netlist is my own, but I wrote a perl
+* script to translate any structural verilog file into my netlist
+* format. This is in the /verilog/ folder
+*/
 layout_t * parser_parseNetlist(char * netlist_n) {
     FILE * netlist_f;
     layout_t * layout = calloc(1,sizeof(layout_t));
@@ -40,7 +49,7 @@ layout_t * parser_parseNetlist(char * netlist_n) {
 * of a layout class in an OOP
 * Holds all gates/ports/wires
 * Also manages the grid that these objects live in
-* Will likely be exported as LEF/DEF
+* Will likely be exported as LEF/DEF someday
 */ 
 layout_t* parser_createLayout(layout_t * layout, char ** init) {
     layout->x_size = atoi(init[0]);
@@ -119,6 +128,8 @@ layout_t* parser_addGate(layout_t *layout, char ** init) {
     layout->size_gates += 1;
     return layout; 
 }
+/* Given a newly created port, link it to its wire in the layout
+*/
 void parser_linkPort(layout_t *layout, wire_n wiren, port_n portn) {
     wire_t * wire = &(layout->all_wires[wiren]); 
     int sz = wire->num_ports + 1; 
@@ -133,6 +144,8 @@ void parser_linkPort(layout_t *layout, wire_n wiren, port_n portn) {
     wire->ports = new_port_bfr;
     wire->num_ports += 1;  
 }
+/*Given a line that specifies a port add it to the netlist
+*/
 layout_t* parser_addPort(layout_t *layout, char ** init) {
     int i = 1; 
     port_t * self_ptr = &(layout->all_ports[layout->size_ports]); 

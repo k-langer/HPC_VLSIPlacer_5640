@@ -1,12 +1,20 @@
 #include "netlist.h"
 #include "common.h"
+/* Calculate wirelength of whole netlist
+*/
 int netlist_layoutWirelength(layout_t * layout) {
     int sum = 0; 
     for (int i = 0; i < layout->size_wires; i++) {
+        //Wirelengths follow and are recorded by wires
          sum += netlist_wireWirelength(layout, i); 
     }
     return sum;
 }
+/* Caclulate wirelength of just one wire in the netlist
+ * given a wire pointer wiren
+ * Wirelengh is just bounding box, and is a gross approximation 
+ * that works well for small fan-outs. 
+*/
 int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     wire_t * wire = &(layout->all_wires[wiren]);
     if (wire->num_gates == 0 && wire->num_ports == 0) {
@@ -27,6 +35,7 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
         }
         t_x = tmp_gate->x; 
         t_y = tmp_gate->y;
+        //Calculate gate bounding box
         if (t_x < minx) {
             minx = t_x; 
         } 
@@ -47,6 +56,7 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
         }
         t_x = tmp_port->x; 
         t_y = tmp_port->y; 
+        //Calculate port bounding box
         if (t_x < minx) {
             minx = t_x; 
         } 
@@ -60,10 +70,14 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
             maxy = t_y;
         }
     }     
+    //Return and update wirelength 
     int sum = (maxx-minx) + (maxy-miny);
     wire->wirelength = sum;
     return sum; 
 }
+/* Dumb the netlist into a file 
+ * File consumed by GUI
+*/
 void netlist_printNetlist(layout_t * layout) {
     FILE *fp = fopen("display/layout.txt", "w+");
     fprintf(fp,"x_size%dy_size%d\n",layout->x_size,layout->y_size); 

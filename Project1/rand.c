@@ -8,6 +8,10 @@ https://idea.popcount.org/2013-03-25-hardware-entropy-rdrand/
 #include "rand.h"
 int rand_init() {
     #ifndef IVYHASWELL
+    /*If not haswell or ivy bridge just use rand()
+    * I did breif timing and QoR studies and it seems 
+    * like they provide similar results
+    */
     srand(time(NULL));
     #endif
     return TRUE; 
