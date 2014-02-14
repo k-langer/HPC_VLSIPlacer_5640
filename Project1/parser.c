@@ -217,7 +217,7 @@ short parser_assignHier(layout_t*layout,wire_t* wire,char* hier) {
 */
 layout_t* parser_addWire(layout_t *layout, char ** init) {
     int i = 1; 
-    wire_t * self_ptr;
+    wire_t * self_ptr = NULL;
     while (init[i]) { 
         if (strstr(init[i],"net=")) {
             int n_len = strlen("net=");
