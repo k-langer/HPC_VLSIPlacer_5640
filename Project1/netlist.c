@@ -147,11 +147,12 @@ void netlist_printQoR(layout_t * layout) {
             density = (hier->size) / ((hier->x_max - hier->x_min + 0.0)*(hier->y_max - hier->y_min+0.0)); 
         }
         hier->density = density; 
-        printf("%s\n\tAvg. Density: %.4f\n\tSize: %d\n",hier->label, density,hier->size);
+        printf("%s\n\tAvg. Spread (%d , %d)(%d , %d)\n\tSize: %d\n",hier->label, hier->x_min,hier->y_min,hier->x_max,hier->y_max,hier->size);
         hier = hier->next; 
     }
     density = (layout->size_gates)/((layout->x_size+0.0)*(layout->y_size+0.0));
-    printf("Total density %.4f\nTotal Wirelength %d\n",density,layout->total_wirelength); 
+    printf("Total density %.4f\nTotal Wirelength %d\n",density,layout->total_wirelength);
+    printf("Total gates: %d\nX bounds: %d\nY bounds: %d\n",layout->size_gates, layout->x_size, layout->y_size); 
     
 }
 void netlist_free(layout_t * layout) {
