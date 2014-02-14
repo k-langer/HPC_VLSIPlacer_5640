@@ -1,0 +1,235 @@
+Sender: LSF System <lsfadmin@compute-0-061>
+Subject: Job 106154: <Q1-HW3-Langer> in cluster <mghpcc_cluster1> Done
+
+Job <Q1-HW3-Langer> was submitted from host <discovery4> by user <langer.k> in cluster <mghpcc_cluster1>.
+Job was executed on host(s) <compute-0-061>, in queue <ser-par-10g>, as user <langer.k> in cluster <mghpcc_cluster1>.
+</home/langer.k> was used as the home directory.
+</home/langer.k/EECE5640/Project1/LFS> was used as the working directory.
+Started at Fri Feb 14 03:30:38 2014
+Results reported at Fri Feb 14 03:37:04 2014
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#! /bin/sh 
+#BSUB -J Q1-HW3-Langer
+#BSUB -o output2.txt
+#BSUB -e error.txt
+#BSUB -n 1
+#BSUB -q ser-par-10g
+#BSUB cwd ~/EECE5640/Project1/
+work=~/EECE5640/Project1/
+cd $work
+
+./placer
+
+#watch output.txt
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :               385.89 sec.
+    Max Memory :             17 MB
+    Average Memory :         16.00 MB
+    Total Requested Memory : -
+    Delta Memory :           -
+    (Delta: the difference between total requested memory and actual max usage.)
+    Max Swap :               246 MB
+
+    Max Processes :          4
+    Max Threads :            5
+
+The output (if any) follows:
+
+WL: 1492508 T 800.000000
+WL: 1482467 T 799.956200
+WL: 1472437 T 799.900000
+WL: 1462420 T 799.824300
+WL: 1452396 T 799.640300
+WL: 1442293 T 799.416100
+WL: 1432240 T 799.067000
+WL: 1422111 T 798.459600
+WL: 1412058 T 796.146200
+WL: 1402006 T 601.081800
+WL: 1391917 T 546.748400
+WL: 1381909 T 457.811500
+WL: 1371844 T 417.027800
+WL: 1361835 T 371.383300
+WL: 1351830 T 341.910800
+WL: 1341801 T 313.709500
+WL: 1331712 T 277.791200
+WL: 1321632 T 267.360800
+WL: 1311604 T 243.343100
+WL: 1301566 T 227.981400
+WL: 1291453 T 220.767700
+WL: 1281305 T 209.364900
+WL: 1271282 T 189.166000
+WL: 1261123 T 179.938800
+WL: 1251022 T 172.952300
+WL: 1240966 T 163.486000
+WL: 1230925 T 159.556500
+WL: 1220909 T 149.284300
+WL: 1210907 T 140.038900
+WL: 1200567 T 135.693100
+WL: 1190483 T 129.970100
+WL: 1180416 T 125.400600
+WL: 1170381 T 118.678000
+WL: 1160334 T 116.752200
+WL: 1150301 T 111.851100
+WL: 1140262 T 108.197700
+WL: 1130233 T 104.843200
+WL: 1120193 T 101.257900
+WL: 1110118 T 97.049200
+WL: 1100088 T 94.542900
+WL: 1090001 T 91.149900
+WL: 1079978 T 87.827800
+WL: 1069945 T 86.040200
+WL: 1059942 T 83.374200
+WL: 1049870 T 80.182800
+WL: 1039804 T 77.386400
+WL: 1029778 T 75.986700
+WL: 1019771 T 72.816200
+WL: 1009680 T 72.527800
+WL: 999626 T 70.870600
+WL: 989603 T 68.555400
+WL: 979547 T 65.753500
+WL: 969503 T 64.665100
+WL: 959478 T 61.816600
+WL: 949458 T 60.678500
+WL: 939338 T 59.800800
+WL: 929286 T 57.781700
+WL: 919259 T 56.650400
+WL: 909181 T 55.680900
+WL: 899104 T 52.849100
+WL: 889082 T 51.556200
+WL: 879075 T 51.024900
+WL: 869041 T 49.889800
+WL: 859007 T 48.477500
+WL: 848857 T 46.295700
+WL: 838844 T 45.729800
+WL: 828833 T 44.708800
+WL: 818766 T 43.827300
+WL: 808690 T 42.802700
+WL: 798645 T 41.936000
+WL: 788638 T 40.752000
+WL: 778630 T 40.111200
+WL: 768625 T 39.394000
+WL: 758598 T 38.356400
+WL: 748593 T 37.990100
+WL: 738581 T 35.792200
+WL: 728554 T 35.338800
+WL: 718534 T 34.678200
+WL: 708513 T 33.708500
+WL: 698493 T 32.835300
+WL: 688460 T 32.158400
+WL: 678384 T 31.231800
+WL: 668346 T 30.854800
+WL: 658345 T 30.077600
+WL: 648341 T 29.217100
+WL: 638320 T 28.267700
+WL: 628293 T 27.841900
+WL: 618264 T 26.939900
+WL: 608223 T 26.294800
+WL: 598210 T 25.537800
+WL: 588186 T 24.986400
+WL: 578174 T 23.948600
+WL: 568161 T 23.623500
+WL: 558129 T 22.770500
+WL: 548094 T 22.191000
+WL: 538042 T 21.345400
+WL: 528034 T 20.717500
+WL: 518031 T 20.347400
+WL: 508025 T 19.582700
+WL: 498014 T 19.238400
+WL: 487992 T 18.768500
+WL: 477984 T 18.002800
+WL: 467981 T 17.381200
+WL: 457977 T 16.908000
+WL: 447948 T 16.248600
+WL: 437916 T 15.785800
+WL: 427846 T 14.933800
+WL: 417817 T 14.479700
+WL: 407811 T 13.968800
+WL: 397799 T 13.381900
+WL: 387795 T 12.818800
+WL: 377790 T 12.227400
+WL: 367781 T 11.696100
+WL: 357757 T 11.154800
+WL: 347752 T 10.667300
+WL: 337737 T 10.122500
+WL: 327735 T 9.540800
+WL: 317707 T 9.064300
+WL: 307697 T 8.609700
+WL: 297695 T 8.002300
+WL: 287684 T 7.513800
+WL: 277683 T 7.099000
+WL: 267681 T 6.577100
+WL: 257660 T 6.057600
+WL: 247633 T 5.545500
+WL: 237623 T 5.094200
+WL: 227621 T 4.600900
+WL: 217613 T 4.101200
+WL: 207610 T 3.547000
+WL: 197604 T 3.079500
+WL: 187594 T 2.571500
+WL: 177590 T 2.033700
+WL: 167588 T 1.520700
+WL: 157586 T 1.002600
+WL: 147585 T 0.499100
+WL: 137584 T 0.000000
+Wirelength: 129161 1492468
+--Quality of Results--
+top
+	Avg. Spread (0 , 2)(219 , 115)
+	Size: 1602
+dp.rf
+	Avg. Spread (9 , 4)(209 , 114)
+	Size: 9364
+dp.pcadd2
+	Avg. Spread (72 , 28)(209 , 143)
+	Size: 125
+dp.alu
+	Avg. Spread (99 , 12)(170 , 123)
+	Size: 535
+dp.srcbmux
+	Avg. Spread (86 , 18)(161 , 143)
+	Size: 65
+dp.pcadd1
+	Avg. Spread (71 , 32)(213 , 145)
+	Size: 125
+c.md
+	Avg. Spread (2 , 28)(26 , 9)
+	Size: 23
+dp.wrmux
+	Avg. Spread (24 , 28)(45 , 37)
+	Size: 11
+dp.pcbrmux
+	Avg. Spread (73 , 31)(210 , 205)
+	Size: 65
+dp.resmux
+	Avg. Spread (8 , 27)(94 , 51)
+	Size: 65
+dp.pcmux
+	Avg. Spread (73 , 30)(210 , 136)
+	Size: 65
+c.ad
+	Avg. Spread (30 , 23)(53 , 34)
+	Size: 25
+dp.pcreg
+	Avg. Spread (205 , 87)(205 , 205)
+	Size: 1
+Total density 0.4960
+Total Wirelength 129161
+Total gates: 12002
+X bounds: 220
+Y bounds: 110
+Sequential time: 384 s 690 ms
+
+PS:
+
+Read file <error.txt> for stderr output of this job.
+
