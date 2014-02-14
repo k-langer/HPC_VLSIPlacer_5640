@@ -28,8 +28,9 @@ $netRename{"reset"} = 0;
 $netRename{"clk"} = 0;
 $netRename{"gnd"} = 0; 
 for my $mod ( $nl->modules() ) {
-   show_hier($mod, '', '');
-   last;
+    if ( defined($mod->name()) and $ARGV[1] eq $mod->name()) {
+        show_hier($mod, '', '');   
+    }
 }
 print $x . " " . $y . " " . $wire_count . " " . $cell_count . " ". $port_count . "\n";
 #for my $values ( keys %netCount ) {
