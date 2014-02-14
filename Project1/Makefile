@@ -1,8 +1,8 @@
 CC=gcc
 #OPT=-O2 -march=corei7 -mtune=corei7-avx
 CFLAGS=-Wall -std=gnu99 -Wno-unused-result -lm 
-# DEBUG=-g -ggdb
-CPARFLAGS=-fopenmp
+DEBUG=-g -ggdb -pg
+#CPARFLAGS=-fopenmp
 #RDRAND=-D IVYHASWELL
 TARGET=placer
 INC=-Iinc/
@@ -16,10 +16,10 @@ OBJS = parser.o \
 all: $(TARGET)
     
 %.o: %.c
-	$(CC) $(INC) $(OPT) $(CFLAGS) $(RDRAND) $(DEBUG) -c $<
+	$(CC) $(INC) $(OPT) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(DEBUG) -c $<
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^ $(OPT) $(CFLAGS) $(RDRAND) $(DEBUG) 
+	$(CC) -o $@ $^ $(OPT) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(DEBUG) 
 clean:
 	rm -f *.o parser placer
 	rm -f core*

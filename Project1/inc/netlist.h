@@ -51,6 +51,7 @@ typedef struct wire {
     int num_gates; 
     int num_ports;
     int wirelength;  
+    int prev_wirelength;
 } wire_t; 
 /*
 * Layout is a graph. 
@@ -80,4 +81,5 @@ typedef struct coord {
 int netlist_wireWirelength(layout_t *, wire_n);
 int netlist_layoutWirelength(layout_t *); 
 void netlist_printNetlist(layout_t*); 
+int netlist_wireRevertWirelength(layout_t *, wire_n);
 #endif

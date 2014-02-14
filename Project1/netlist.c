@@ -27,12 +27,12 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     int t_x; 
     int t_y; 
     gate_t * tmp_gate; 
-    port_t * tmp_port; 
+    port_t * tmp_port;
     for (int i = 0; i < wire->num_gates; i++) {
         tmp_gate = &(layout->all_gates[wire->gates[i]]);
-        if (!tmp_gate->name) {
-            continue; 
-        }
+        //if (!tmp_gate->name) {
+        //    continue; 
+        //}
         t_x = tmp_gate->x; 
         t_y = tmp_gate->y;
         //Calculate gate bounding box
@@ -51,9 +51,9 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     }
     for (int i = 0; i < wire->num_ports; i++) {
         tmp_port = &(layout->all_ports[wire->ports[i]]); 
-        if (!tmp_port->name) {
-            continue;   
-        }
+        //if (!tmp_port->name) {
+        //    continue;   
+        //}
         t_x = tmp_port->x; 
         t_y = tmp_port->y; 
         //Calculate port bounding box
@@ -72,8 +72,20 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     }     
     //Return and update wirelength 
     int sum = (maxx-minx) + (maxy-miny);
+    if (wire->wirelength) {
+        wire->prev_wirelength = wire->wirelength; 
+    }
     wire->wirelength = sum;
     return sum; 
+}
+int netlist_wireRevertWirelength(layout_t * layout, wire_n wiren) {
+    /*Profiling shows that most time is spent calculating wirelengths 
+    * Implementing roll-back will prevent recalculation 
+    * First attempt caused significant problems and is **HIGH** on the do list
+    * Note: will be hard to stay thread safe...
+    */
+    netlist_wireWirelength(layout,wiren);
+    return 0;
 }
 /* Dumb the netlist into a file 
  * File consumed by GUI

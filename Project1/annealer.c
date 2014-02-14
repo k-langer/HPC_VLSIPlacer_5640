@@ -121,7 +121,8 @@ layout_t * annealer_simulatedAnnealing(
             recalc = annealer_swapGates(layout,rand_gate,swap_back);
             count = 0; 
             while (recalc[count]) {
-                netlist_wireWirelength(layout,recalc[count]);
+                netlist_wireRevertWirelength(layout,recalc[count]);
+                //netlist_wireWirelength(layout,recalc[count]);
                 count++;
             }
             free(recalc);

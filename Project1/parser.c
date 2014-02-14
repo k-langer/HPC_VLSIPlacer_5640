@@ -13,26 +13,29 @@
 */
 layout_t * parser_parseNetlist(char * netlist_n) {
     FILE * netlist_f;
-    layout_t * layout = calloc(1,sizeof(layout_t));
     netlist_f = fopen(netlist_n,"r");
+    layout_t * layout; 
     if (netlist_f) {
         char *buffer = 0; 
         size_t buflen = 0; 
         char ** tokens; 
         getline(&buffer, &buflen, netlist_f);
+        layout = calloc(1,sizeof(layout_t));
         tokens = parser_split(buffer, ' ');
         parser_createLayout(layout, tokens);
         while (getline(&buffer, &buflen, netlist_f) != -1) {
             tokens = parser_split(buffer, ' ');
             switch (tokens[0][0]) {
+                case '#':
+                    break;
                 case 'p':
                     parser_addPort(layout,tokens);
                     break;
                 case 'g':
                     parser_addGate(layout,tokens); 
                     break;
-                case '#':
-                    break;
+                case 'w':
+                    parser_addWire(layout,tokens);
                 default:
                     printf("Something went wrong in parser land"); 
             }
