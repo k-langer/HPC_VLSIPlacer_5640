@@ -1,0 +1,266 @@
+18 66 133 67 67
+# Reduction Or
+p name=A_0 wire=2 y=2 x=0
+p name=A_1 wire=3 y=3 x=0
+p name=A_2 wire=4 y=4 x=0
+p name=A_3 wire=5 y=5 x=0
+p name=A_4 wire=6 y=6 x=0
+p name=A_5 wire=7 y=7 x=0
+p name=A_6 wire=8 y=8 x=0
+p name=A_7 wire=9 y=9 x=0
+p name=A_8 wire=10 y=10 x=0
+p name=A_9 wire=11 y=11 x=0
+p name=A_10 wire=12 y=12 x=0
+p name=A_11 wire=13 y=13 x=0
+p name=A_12 wire=14 y=14 x=0
+p name=A_13 wire=15 y=15 x=0
+p name=A_14 wire=16 y=16 x=0
+p name=A_15 wire=17 y=17 x=0
+p name=A_16 wire=18 y=18 x=0
+p name=A_17 wire=19 y=19 x=0
+p name=A_18 wire=20 y=20 x=0
+p name=A_19 wire=21 y=21 x=0
+p name=A_20 wire=22 y=22 x=0
+p name=A_21 wire=23 y=23 x=0
+p name=A_22 wire=24 y=24 x=0
+p name=A_23 wire=25 y=25 x=0
+p name=A_24 wire=26 y=26 x=0
+p name=A_25 wire=27 y=27 x=0
+p name=A_26 wire=28 y=28 x=0
+p name=A_27 wire=29 y=29 x=0
+p name=A_28 wire=30 y=30 x=0
+p name=A_29 wire=31 y=31 x=0
+p name=A_30 wire=32 y=32 x=0
+p name=A_31 wire=33 y=33 x=0
+p name=A_32 wire=34 y=34 x=0
+p name=A_33 wire=35 y=35 x=0
+p name=A_34 wire=36 y=36 x=0
+p name=A_35 wire=37 y=37 x=0
+p name=A_36 wire=38 y=38 x=0
+p name=A_37 wire=39 y=39 x=0
+p name=A_38 wire=40 y=40 x=0
+p name=A_39 wire=41 y=41 x=0
+p name=A_40 wire=42 y=42 x=0
+p name=A_41 wire=43 y=43 x=0
+p name=A_42 wire=44 y=44 x=0
+p name=A_43 wire=45 y=45 x=0
+p name=A_44 wire=46 y=46 x=0
+p name=A_45 wire=47 y=47 x=0
+p name=A_46 wire=48 y=48 x=0
+p name=A_47 wire=49 y=49 x=0
+p name=A_48 wire=50 y=50 x=0
+p name=A_49 wire=51 y=51 x=0
+p name=A_50 wire=52 y=52 x=0
+p name=A_51 wire=53 y=53 x=0
+p name=A_52 wire=54 y=54 x=0
+p name=A_53 wire=55 y=55 x=0
+p name=A_54 wire=56 y=56 x=0
+p name=A_55 wire=57 y=57 x=0
+p name=A_56 wire=58 y=58 x=0
+p name=A_57 wire=59 y=59 x=0
+p name=A_58 wire=60 y=60 x=0
+p name=A_59 wire=61 y=61 x=0
+p name=A_60 wire=62 y=62 x=0
+p name=A_61 wire=63 y=63 x=0
+p name=A_62 wire=64 y=64 x=0
+p name=A_63 wire=65 y=65 x=0
+p name=A_64 wire=66 y=66 x=0
+p name=Y1 wire=67 y=2 x=18
+g name=AND2X2_1 fanin=68 fanout=69 fanin=70
+g name=AND2X2_2 fanin=71 fanout=72 fanin=73
+g name=AND2X2_3 fanin=74 fanout=75 fanin=76
+g name=BUFX2_1 fanin=77 fanout=67
+g name=INVX1_1 fanin=57 fanout=78
+g name=NAND2X1_1 fanin=79 fanout=80 fanin=81
+g name=NAND2X1_10 fanin=82 fanout=83 fanin=84
+g name=NAND2X1_11 fanin=85 fanout=86 fanin=87
+g name=NAND2X1_12 fanin=88 fanout=89 fanin=90
+g name=NAND2X1_13 fanin=91 fanout=92 fanin=93
+g name=NAND2X1_14 fanin=94 fanout=95 fanin=96
+g name=NAND2X1_15 fanin=97 fanout=98 fanin=99
+g name=NAND2X1_16 fanin=100 fanout=101 fanin=102
+g name=NAND2X1_17 fanin=103 fanout=104 fanin=105
+g name=NAND2X1_18 fanin=106 fanout=107 fanin=108
+g name=NAND2X1_19 fanin=69 fanout=77 fanin=75
+g name=NAND2X1_2 fanin=109 fanout=110 fanin=111
+g name=NAND2X1_3 fanin=112 fanout=113 fanin=114
+g name=NAND2X1_4 fanin=115 fanout=116 fanin=117
+g name=NAND2X1_5 fanin=78 fanout=118 fanin=119
+g name=NAND2X1_6 fanin=120 fanout=121 fanin=122
+g name=NAND2X1_7 fanin=72 fanout=123 fanin=124
+g name=NAND2X1_8 fanin=125 fanout=126 fanin=127
+g name=NAND2X1_9 fanin=128 fanout=129 fanin=130
+g name=NOR2X1_1 fanin=35 fanout=79 fanin=38
+g name=NOR2X1_10 fanin=113 fanout=70 fanin=116
+g name=NOR2X1_11 fanin=51 fanout=71 fanin=54
+g name=NOR2X1_12 fanin=48 fanout=73 fanin=49
+g name=NOR2X1_13 fanin=55 fanout=119 fanin=56
+g name=NOR2X1_14 fanin=52 fanout=120 fanin=53
+g name=NOR2X1_15 fanin=47 fanout=122 fanin=50
+g name=NOR2X1_16 fanin=118 fanout=124 fanin=121
+g name=NOR2X1_17 fanin=36 fanout=125 fanin=37
+g name=NOR2X1_18 fanin=31 fanout=127 fanin=34
+g name=NOR2X1_19 fanin=43 fanout=128 fanin=46
+g name=NOR2X1_2 fanin=32 fanout=81 fanin=33
+g name=NOR2X1_20 fanin=40 fanout=130 fanin=41
+g name=NOR2X1_21 fanin=126 fanout=88 fanin=129
+g name=NOR2X1_22 fanin=19 fanout=82 fanin=22
+g name=NOR2X1_23 fanin=16 fanout=84 fanin=17
+g name=NOR2X1_24 fanin=28 fanout=85 fanin=29
+g name=NOR2X1_25 fanin=23 fanout=87 fanin=26
+g name=NOR2X1_26 fanin=83 fanout=90 fanin=86
+g name=NOR2X1_27 fanin=123 fanout=74 fanin=89
+g name=NOR2X1_28 fanin=4 fanout=91 fanin=5
+g name=NOR2X1_29 fanin=64 fanout=93 fanin=2
+g name=NOR2X1_3 fanin=44 fanout=109 fanin=45
+g name=NOR2X1_30 fanin=11 fanout=94 fanin=14
+g name=NOR2X1_31 fanin=8 fanout=96 fanin=9
+g name=NOR2X1_32 fanin=60 fanout=97 fanin=61
+g name=NOR2X1_33 fanin=62 fanout=99 fanin=63
+g name=NOR2X1_34 fanin=131 fanout=106 fanin=98
+g name=NOR2X1_35 fanin=3 fanout=100 fanin=6
+g name=NOR2X1_36 fanin=65 fanout=102 fanin=66
+g name=NOR2X1_37 fanin=12 fanout=103 fanin=13
+g name=NOR2X1_38 fanin=7 fanout=105 fanin=10
+g name=NOR2X1_39 fanin=101 fanout=108 fanin=104
+g name=NOR2X1_4 fanin=39 fanout=111 fanin=42
+g name=NOR2X1_40 fanin=132 fanout=76 fanin=107
+g name=NOR2X1_5 fanin=80 fanout=68 fanin=110
+g name=NOR2X1_6 fanin=20 fanout=112 fanin=21
+g name=NOR2X1_7 fanin=15 fanout=114 fanin=18
+g name=NOR2X1_8 fanin=27 fanout=115 fanin=30
+g name=NOR2X1_9 fanin=24 fanout=117 fanin=25
+g name=OR2X2_1 fanin=92 fanout=132 fanin=95
+g name=OR2X2_2 fanin=58 fanout=131 fanin=59
+w net=127 hier=top weight=1
+w net=32 hier=top weight=1
+w net=90 hier=top weight=1
+w net=118 hier=top weight=1
+w net=71 hier=top weight=1
+w net=102 hier=top weight=1
+w net=18 hier=top weight=1
+w net=125 hier=top weight=1
+w net=16 hier=top weight=1
+w net=44 hier=top weight=1
+w net=55 hier=top weight=1
+w net=84 hier=top weight=1
+w net=27 hier=top weight=1
+w net=95 hier=top weight=1
+w net=57 hier=top weight=1
+w net=20 hier=top weight=1
+w net=109 hier=top weight=1
+w net=89 hier=top weight=1
+w net=31 hier=top weight=1
+w net=35 hier=top weight=1
+w net=11 hier=top weight=1
+w net=78 hier=top weight=1
+w net=93 hier=top weight=1
+w net=106 hier=top weight=1
+w net=65 hier=top weight=1
+w net=29 hier=top weight=1
+w net=114 hier=top weight=1
+w net=58 hier=top weight=1
+w net=15 hier=top weight=1
+w net=81 hier=top weight=1
+w net=60 hier=top weight=1
+w net=101 hier=top weight=1
+w net=73 hier=top weight=1
+w net=86 hier=top weight=1
+w net=76 hier=top weight=1
+w net=62 hier=top weight=1
+w net=67 hier=top weight=1
+w net=129 hier=top weight=1
+w net=2 hier=top weight=1
+w net=17 hier=top weight=1
+w net=110 hier=top weight=1
+w net=82 hier=top weight=1
+w net=14 hier=top weight=1
+w net=112 hier=top weight=1
+w net=69 hier=top weight=1
+w net=49 hier=top weight=1
+w net=24 hier=top weight=1
+w net=124 hier=top weight=1
+w net=104 hier=top weight=1
+w net=131 hier=top weight=1
+w net=121 hier=top weight=1
+w net=79 hier=top weight=1
+w net=23 hier=top weight=1
+w net=96 hier=top weight=1
+w net=126 hier=top weight=1
+w net=47 hier=top weight=1
+w net=8 hier=top weight=1
+w net=98 hier=top weight=1
+w net=37 hier=top weight=1
+w net=117 hier=top weight=1
+w net=43 hier=top weight=1
+w net=5 hier=top weight=1
+w net=33 hier=top weight=1
+w net=21 hier=top weight=1
+w net=63 hier=top weight=1
+w net=7 hier=top weight=1
+w net=26 hier=top weight=1
+w net=80 hier=top weight=1
+w net=119 hier=top weight=1
+w net=99 hier=top weight=1
+w net=72 hier=top weight=1
+w net=74 hier=top weight=1
+w net=61 hier=top weight=1
+w net=108 hier=top weight=1
+w net=115 hier=top weight=1
+w net=92 hier=top weight=1
+w net=103 hier=top weight=1
+w net=10 hier=top weight=1
+w net=113 hier=top weight=1
+w net=91 hier=top weight=1
+w net=48 hier=top weight=1
+w net=107 hier=top weight=1
+w net=87 hier=top weight=1
+w net=77 hier=top weight=1
+w net=123 hier=top weight=1
+w net=50 hier=top weight=1
+w net=39 hier=top weight=1
+w net=64 hier=top weight=1
+w net=97 hier=top weight=1
+w net=12 hier=top weight=1
+w net=41 hier=top weight=1
+w net=52 hier=top weight=1
+w net=56 hier=top weight=1
+w net=45 hier=top weight=1
+w net=66 hier=top weight=1
+w net=19 hier=top weight=1
+w net=54 hier=top weight=1
+w net=70 hier=top weight=1
+w net=68 hier=top weight=1
+w net=1 hier=top weight=1
+w net=88 hier=top weight=1
+w net=116 hier=top weight=1
+w net=30 hier=top weight=1
+w net=100 hier=top weight=1
+w net=25 hier=top weight=1
+w net=128 hier=top weight=1
+w net=28 hier=top weight=1
+w net=120 hier=top weight=1
+w net=40 hier=top weight=1
+w net=75 hier=top weight=1
+w net=83 hier=top weight=1
+w net=59 hier=top weight=1
+w net=130 hier=top weight=1
+w net=53 hier=top weight=1
+w net=122 hier=top weight=1
+w net=42 hier=top weight=1
+w net=22 hier=top weight=1
+w net=46 hier=top weight=1
+w net=13 hier=top weight=1
+w net=105 hier=top weight=1
+w net=6 hier=top weight=1
+w net=85 hier=top weight=1
+w net=36 hier=top weight=1
+w net=3 hier=top weight=1
+w net=94 hier=top weight=1
+w net=51 hier=top weight=1
+w net=9 hier=top weight=1
+w net=111 hier=top weight=1
+w net=38 hier=top weight=1
+w net=4 hier=top weight=1
+w net=34 hier=top weight=1
+w net=132 hier=top weight=1

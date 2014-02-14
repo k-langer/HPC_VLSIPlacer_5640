@@ -1,0 +1,40 @@
+21 16 35 22 16
+# hand drawn example
+g name=U0 fanout=11 fanin=1 fanin=2
+g name=U1 fanout=10 fanin=3 fanin=4
+g name=U2 fanout=9 fanin=5 fanin=6 
+g name=U3 fanout=13 fanin=7 fanin=8 fanin=9
+g name=U4 fanout=14 fanin=9
+g name=U5 fanout=15 fanin=9 fanin=10
+g name=U6 fanout=16 fanin=10 fanin=11 fanin=12
+g name=U7 fanout=17 fanin=13
+g name=U8 fanout=18 fanin=14 fanin=15
+g name=U9 fanout=20 fanin=16
+g name=U10 fanout=21 fanin=17 fanin=18 fanin=22
+g name=U11 fanout=22 fanin=18 fanin=20
+g name=U12 fanout=23 fanin=20
+g name=U13 fanout=25 fanin=21
+g name=U14 fanout=24 fanin=23
+g name=U15 fanout=27 fanin=26 fanin=25
+g name=U16 fanout=31 fanin=25 fanin=22
+g name=U17 fanout=32 fanin=22
+g name=U18 fanout=33 fanin=22
+g name=U19 fanout=34 fanin=22 fanin=25
+g name=U20 fanout=29 fanin=28 fanin=27
+g name=U21 fanout=30 fanin=29
+p name=P0 x=0 y=5 wire=1
+p name=P1 x=0 y=6 wire=2
+p name=P2 x=0 y=8 wire=3
+p name=P3 x=0 y=9 wire=4
+p name=P4 x=0 y=11 wire=5
+p name=P5 x=0 y=12 wire=6
+p name=P6 x=0 y=14 wire=7
+p name=P7 x=5 y=15 wire=8
+p name=P8 x=15 y=15 wire=26
+p name=P9 x=17 y=15 wire=28
+p name=P10 x=20 y=13 wire=30
+p name=P11 x=20 y=10 wire=31
+p name=P12 x=20 y=9 wire=32
+p name=P13 x=20 y=6 wire=33
+p name=P14 x=20 y=3 wire=34
+p name=P15 wire=24 y=1 x=20
