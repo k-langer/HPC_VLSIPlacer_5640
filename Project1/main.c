@@ -12,10 +12,11 @@ int main() {
     rand_init(); 
     annealer_createInitialPlacement(layout);
     int sum1 = netlist_layoutWirelength(layout);
-    //annealer_anneal(layout,sum1);
+    annealer_anneal(layout,sum1);
     int sum = netlist_layoutWirelength(layout);
     printf("Wirelength: %d %d\n",sum,sum1);
     netlist_printNetlist(layout); 
+    netlist_printQoR(layout);
     netlist_free(layout);
     return 0;
 }

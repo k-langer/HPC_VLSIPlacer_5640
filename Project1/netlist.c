@@ -88,7 +88,7 @@ int netlist_wireRevertWirelength(layout_t * layout, wire_n wiren) {
     netlist_wireWirelength(layout,wiren);
     return 0;
 }
-/* Dumb the netlist into a file 
+/* Dump the netlist into a file 
  * File consumed by GUI
 */
 void netlist_printNetlist(layout_t * layout) {
@@ -109,6 +109,50 @@ void netlist_printNetlist(layout_t * layout) {
             fprintf(fp,"portname%sx%dy%d\n",tmp_port->name,tmp_port->x,tmp_port->y);
         }
     }   
+}
+hier_t * getHier(layout_t * layout, short hier_ptr) {
+    hier_t * rt = &(layout->all_hier[0]); 
+    for (int i = 0; i < hier_ptr; i++) {
+        rt = rt->next;
+    }
+    return rt;
+}
+void netlist_printQoR(layout_t * layout) {
+   hier_t * hier; 
+   for (int i = 0; i < layout->size_gates; i++) {
+        gate_t * gate_ptr = &(layout->all_gates[i]);
+        short hier_ptr = layout->all_wires[gate_ptr->fanout].heir;
+        hier = getHier(layout,hier_ptr); 
+        int gx = gate_ptr->x; 
+        int gy = gate_ptr->y;
+        if (gx < hier->x_min) {
+            hier->x_min = gx; 
+        }
+        if (gx > hier->x_max) {
+            hier->x_max = gx; 
+        } 
+        if (gy < hier->y_min) {
+            hier->y_min = gy; 
+        } 
+        if (gy > hier->y_max) {
+            hier->y_max = gx; 
+        }
+    }
+    hier = &(layout->all_hier[0]);
+    printf ("--Quality of Results--\n");
+    double density; 
+    while (hier) {
+        density = 1;
+        if (hier->size > 1) {
+            density = (hier->size) / ((hier->x_max - hier->x_min + 0.0)*(hier->y_max - hier->y_min+0.0)); 
+        }
+        hier->density = density; 
+        printf("%s\n\tAvg. Density: %.4f\n\tSize: %d\n",hier->label, density,hier->size);
+        hier = hier->next; 
+    }
+    density = (layout->size_gates)/((layout->x_size+0.0)*(layout->y_size+0.0));
+    printf("Total density %.4f\nTotal Wirelength %d\n",density,layout->total_wirelength); 
+    
 }
 void netlist_free(layout_t * layout) {
     for (int i = 0; i < layout->size_gates; i++) {

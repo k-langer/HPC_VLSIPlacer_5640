@@ -191,6 +191,8 @@ short parser_assignHier(layout_t*layout,wire_t* wire,char* hier) {
     do {
         if(strstr(check_hier->label,hier)) {
             check_hier->size += 1;
+            check_hier->x_min = layout->x_size;
+            check_hier->y_min = layout->y_size;
             return hier_ptr; 
         }
         hier_ptr++;
@@ -202,6 +204,9 @@ short parser_assignHier(layout_t*layout,wire_t* wire,char* hier) {
     char * str = calloc(sizeof(char*),hier_len); 
     memcpy(str,hier,hier_len);  
     last->next->label = str;
+    last->next->x_min = layout->x_size; 
+    last->next->y_min = layout->y_size;
+    last->next->size = 1; 
     return hier_ptr; 
 }
 /*

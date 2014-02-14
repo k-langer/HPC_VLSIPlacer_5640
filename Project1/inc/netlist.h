@@ -12,8 +12,10 @@ typedef struct hier {
     char * label;     
     struct hier * next; 
     double density; 
-    int x; 
-    int y; 
+    int x_min; 
+    int y_min;
+    int x_max;
+    int y_max; 
     unsigned int size;
 } hier_t; 
 /*
