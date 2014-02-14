@@ -36,8 +36,9 @@ layout_t * parser_parseNetlist(char * netlist_n) {
                     break;
                 case 'w':
                     parser_addWire(layout,tokens);
+                    break;
                 default:
-                    printf("Something went wrong in parser land"); 
+                    printf("Something went wrong in parser land\n"); 
             }
         }
     } else {
@@ -70,6 +71,11 @@ layout_t* parser_createLayout(layout_t * layout, char ** init) {
         sprintf(*buffer,"%d",i);
     } 
     layout->grid = calloc(layout->x_size*layout->y_size,sizeof(gate_t *));
+    layout->all_hier = calloc(sizeof(hier_t),1);
+    char * top_n = "top";
+    layout->all_hier->label = calloc(sizeof(char),4);  
+    memcpy(layout->all_hier->label,top_n,4);
+    assert(layout->all_hier);
     assert(layout->all_ports);
     assert(layout->all_wires);
     assert(layout->all_gates);
@@ -178,10 +184,50 @@ layout_t* parser_addPort(layout_t *layout, char ** init) {
     layout->size_ports += 1;
     return layout; 
 }
+short parser_assignHier(layout_t*layout,wire_t* wire,char* hier) {
+    hier_t * check_hier = &(layout->all_hier[0]);
+    hier_t * last; 
+    short hier_ptr = 0; 
+    do {
+        if(strstr(check_hier->label,hier)) {
+            check_hier->size += 1;
+            return hier_ptr; 
+        }
+        hier_ptr++;
+        last = check_hier;  
+        check_hier = check_hier->next; 
+    } while (check_hier);
+    last->next = calloc(sizeof(hier_t),1); 
+    int hier_len = strlen(hier);
+    char * str = calloc(sizeof(char*),hier_len); 
+    memcpy(str,hier,hier_len);  
+    last->next->label = str;
+    return hier_ptr; 
+}
 /*
 *TODO: allow for wires to take on names
 */
 layout_t* parser_addWire(layout_t *layout, char ** init) {
+    int i = 1; 
+    wire_t * self_ptr;
+    while (init[i]) { 
+        if (strstr(init[i],"net=")) {
+            int n_len = strlen("net=");
+            wire_n fi = atoi(init[i]+n_len);
+            self_ptr = &(layout->all_wires[fi]); 
+        } else if (strstr(init[i],"hier=")) {
+            int h_len = strlen("heir=");
+            if (self_ptr) {
+                self_ptr->heir = parser_assignHier(layout,self_ptr,init[i]+h_len); 
+            }
+        } else if (strstr(init[i],"weight=")) {
+            int w_len = strlen("weight="); 
+            if(self_ptr) {
+                self_ptr->weight = atoi(init[i]+w_len);
+            }
+        } 
+        i++;
+    }
     return layout; 
 }
 /*str_spit shamelessly stolen from 

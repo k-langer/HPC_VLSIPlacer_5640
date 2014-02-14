@@ -3,7 +3,7 @@
 
 from Tkinter import Tk, Canvas, Frame, BOTH, W
 import re, sys, os
-scale_c = 15
+scale_c = 5
 margin =40
 x_origin = 0*scale_c
 y_origin = 0*scale_c

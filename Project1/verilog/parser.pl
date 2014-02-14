@@ -18,6 +18,7 @@ my $scale = 1;
 my $netNumber = 0; 
 my %netRename = ();
 my %netCount = ();
+my %netHier = (); 
 my $cell_count = 1; 
 my $wire_count = 1;  
 my $port_count = 1; 
@@ -28,9 +29,13 @@ $netRename{"reset"} = 0;
 $netRename{"clk"} = 0;
 $netRename{"gnd"} = 0; 
 for my $mod ( $nl->modules() ) {
-    if ( defined($mod->name()) and $ARGV[1] eq $mod->name()) {
-        show_hier($mod, '', '');   
+    if ( defined($mod->name()) and $ARGV[1] eq $mod->name() ) {
+        show_hier($mod, '', '');  
+        last; 
     }
+}
+for my $nets (keys %netHier) {
+    print "w net=" . $nets . " hier=" . $netHier{$nets} . " weight=1\n";
 }
 print $x . " " . $y . " " . $wire_count . " " . $cell_count . " ". $port_count . "\n";
 #for my $values ( keys %netCount ) {
@@ -45,6 +50,11 @@ sub get_net {
         $wire_count += 1; 
         $netNumber += 1; 
         $netCount{$net_t} = 1; 
+        if ($net_t =~ /([\w\.\d]+)\._abc/) {
+            $netHier{$netNumber} = $1;
+        } else {
+            $netHier{$netNumber} = "top"
+        }
         $netRename{$net_t} = $netNumber; 
         return $netNumber
     }

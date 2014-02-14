@@ -8,6 +8,7 @@ int netlist_layoutWirelength(layout_t * layout) {
         //Wirelengths follow and are recorded by wires
          sum += netlist_wireWirelength(layout, i); 
     }
+    layout->total_wirelength = sum;
     return sum;
 }
 /* Caclulate wirelength of just one wire in the netlist
@@ -109,3 +110,26 @@ void netlist_printNetlist(layout_t * layout) {
         }
     }   
 }
+void netlist_free(layout_t * layout) {
+    for (int i = 0; i < layout->size_gates; i++) {
+        free(layout->all_gates[i].name);
+        free(layout->all_gates[i].fanin);
+    }
+    for (int i = 0; i < layout->size_ports; i++) {
+        free(layout->all_ports[i].name);
+    }
+    for (int i = 0; i < layout->size_wires; i++) {
+        free(layout->all_wires[i].gates);
+        free(layout->all_wires[i].ports);
+        free(layout->all_wires[i].name);
+    }
+    free(layout->grid); 
+    free(layout->all_ports);
+    free(layout->all_gates);
+    free(layout->all_wires);   
+    free(layout); 
+}
+
+
+
+

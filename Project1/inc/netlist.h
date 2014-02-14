@@ -8,6 +8,14 @@ typedef int port_n;
 * and minimize D$ problems. So that is why everything is in wony orders
 */
 
+typedef struct hier {
+    char * label;     
+    struct hier * next; 
+    double density; 
+    int x; 
+    int y; 
+    unsigned int size;
+} hier_t; 
 /*
 * Port:
 *  -Name: of power 
@@ -50,8 +58,10 @@ typedef struct wire {
     char * name; 
     int num_gates; 
     int num_ports;
-    int wirelength;  
-    int prev_wirelength;
+    unsigned int wirelength;  
+    unsigned int prev_wirelength;
+    unsigned short heir; 
+    unsigned short weight;
 } wire_t; 
 /*
 * Layout is a graph. 
@@ -63,12 +73,14 @@ typedef struct layout {
     port_t * all_ports; 
     gate_t * all_gates; 
     wire_t * all_wires; 
+    gate_t ** grid;
+    hier_t * all_hier; 
     int x_size; 
     int y_size; 
     int size_gates; 
     int size_ports; 
-    int size_wires; 
-    gate_t ** grid;
+    int size_wires;
+    unsigned int total_wirelength; 
 } layout_t;
 /*
 * coord in a layout
@@ -82,4 +94,6 @@ int netlist_wireWirelength(layout_t *, wire_n);
 int netlist_layoutWirelength(layout_t *); 
 void netlist_printNetlist(layout_t*); 
 int netlist_wireRevertWirelength(layout_t *, wire_n);
+void netlist_printQoR(layout_t *); 
+void netlist_free(layout_t *); 
 #endif
