@@ -1,0 +1,23 @@
+About: 
+    This program takes a netlist and produces a netlist annotated with logically
+    placed gates. Because optimal placement is a n! problem, this approximates 
+    placement using annealing. Soon it will also use numerical methods to aid the
+    stochastic ones. 
+
+Install: 
+    - copy a netlist into ./ and call it netlist.txt
+    - make 
+
+Run:
+    ./placer 
+
+View results:
+    ./display/draw_layout.py 
+    Note: the GUI really only works for small
+    netlists currently. As it does not support zoom or pan. 
+
+Create your own input file:
+    in the /verilog/ folder, run parser.pl 
+    and give it two arguments, the filename of a 
+    structural verilog file and the top verilog 
+    module in the structural verilog file.  
