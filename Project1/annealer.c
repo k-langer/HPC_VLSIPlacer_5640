@@ -71,14 +71,21 @@ layout_t * annealer_anneal(layout_t * layout, int wirelength) {
         annealer_createInitialPlacement(layout);
         wirelength = netlist_layoutWirelength(layout);  
     }
-    return annealer_simulatedAnnealing(layout,wirelength,800.0);
+    return annealer_simulatedAnnealing(layout,wirelength,200.0);
 }
 /*
  * Use probablity magic to determine if a adverse swap is accepted
  * T is assumed to be > 0 and deltaL is assumed to be >= 0
 */
 bool_t annealer_acceptSwap(int deltaL, double T) {
-    return (exp(deltaL/T) > rand_rdrand1());
+    #ifdef NO_ANNEALER
+        return FALSE;
+    #endif
+    if (T > 0) {
+        return (exp(deltaL/T) > rand_rdrand1());
+    } else {
+        return FALSE;
+    }
 }
 /* Do the annealing. Swap randomly. Accept all swaps that impove
  * placement. Accept negative swaps that pass the acceptSwap test
@@ -115,7 +122,7 @@ layout_t * annealer_simulatedAnnealing(
         }
         free(recalc);
         deltaT = pre_wirelength - post_wirelength;  
-        if (deltaT < 0 && !annealer_acceptSwap(deltaT,tempature)) {
+        if ((deltaT < 0 ) && !annealer_acceptSwap(deltaT,tempature)) {
             //Swap back rejects
             //TODO: optimize this 
             recalc = annealer_swapGates(layout,rand_gate,swap_back);
@@ -131,11 +138,11 @@ layout_t * annealer_simulatedAnnealing(
                 break;
             } else if (deltaT > 0) {
                 stall = 0;
-                if (tempature > 0.001) {
+            //    if (tempature > 0.001) {
                     tempature-=0.0001;
-                } else {
-                    tempature = 0;
-                }
+            //    } else {
+            //        tempature = 0;
+            //    }
             }
             wirelength -= deltaT; 
             //Display after 10k changes

@@ -73,9 +73,10 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     }     
     //Return and update wirelength 
     int sum = (maxx-minx) + (maxy-miny);
-    if (wire->wirelength) {
-        wire->prev_wirelength = wire->wirelength; 
+    if (wire->wirelength == 0) {
+        wire->prev_wirelength = sum;
     }
+    wire->prev_wirelength = wire->wirelength;       
     wire->wirelength = sum;
     return sum; 
 }
@@ -85,6 +86,7 @@ int netlist_wireRevertWirelength(layout_t * layout, wire_n wiren) {
     * First attempt caused significant problems and is **HIGH** on the do list
     * Note: will be hard to stay thread safe...
     */
+    //wire_t * wire_tmp = &(layout->all_wires[wiren]); 
     netlist_wireWirelength(layout,wiren);
     return 0;
 }
