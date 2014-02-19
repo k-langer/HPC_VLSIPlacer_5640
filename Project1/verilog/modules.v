@@ -2,7 +2,10 @@ module BUFX2 ( gnd, vdd, A, Y);
     input gnd, vdd, A; 
     output Y;
 endmodule 
-
+module BUFX4 ( gnd, vdd, A, Y);
+    input gnd, vdd, A; 
+    output Y;
+endmodule 
 module AND2X2 ( gnd, vdd, A, B, Y);
     input gnd, vdd, A, B;
     output Y;

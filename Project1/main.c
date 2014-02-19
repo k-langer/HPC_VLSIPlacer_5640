@@ -21,7 +21,7 @@ int main(int argc, char**argv) {
     netlist_printQoR(layout);
     netlist_free(layout);
     int msec = diff * 1000 / CLOCKS_PER_SEC;
-    printf("Sequential time: %d s %d ms", msec/1000, msec%1000);
+    printf("Sequential time: %d s %d ms\n", msec/1000, msec%1000);
     return 0;
 }
 

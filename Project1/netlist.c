@@ -30,7 +30,7 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     gate_t * tmp_gate; 
     port_t * tmp_port;
     for (int i = 0; i < wire->num_gates; i++) {
-        tmp_gate = &(layout->all_gates[wire->gates[i]]);
+        tmp_gate = layout->all_gates + wire->gates[i];
         //if (!tmp_gate->name) {
         //    continue; 
         //}
@@ -51,7 +51,7 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
         }
     }
     for (int i = 0; i < wire->num_ports; i++) {
-        tmp_port = &(layout->all_ports[wire->ports[i]]); 
+        tmp_port = layout->all_ports + wire->ports[i]; 
         //if (!tmp_port->name) {
         //    continue;   
         //}
@@ -75,8 +75,9 @@ int netlist_wireWirelength(layout_t * layout, wire_n wiren) {
     int sum = (maxx-minx) + (maxy-miny);
     if (wire->wirelength == 0) {
         wire->prev_wirelength = sum;
+    } else {
+        wire->prev_wirelength = wire->wirelength;           
     }
-    wire->prev_wirelength = wire->wirelength;       
     wire->wirelength = sum;
     return sum; 
 }
@@ -86,7 +87,10 @@ int netlist_wireRevertWirelength(layout_t * layout, wire_n wiren) {
     * First attempt caused significant problems and is **HIGH** on the do list
     * Note: will be hard to stay thread safe...
     */
-    //wire_t * wire_tmp = &(layout->all_wires[wiren]); 
+    wire_t * wire_tmp = &(layout->all_wires[wiren]); 
+    int old_wl = wire_tmp->wirelength; 
+    wire_tmp->wirelength = wire_tmp->prev_wirelength; 
+    wire_tmp->prev_wirelength = old_wl;
     netlist_wireWirelength(layout,wiren);
     return 0;
 }

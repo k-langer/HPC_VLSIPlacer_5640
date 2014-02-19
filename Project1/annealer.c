@@ -30,8 +30,8 @@ layout_t * annealer_createInitialPlacement(layout_t * layout) {
 * Swap a gate in the layout (specified with gate pointer gaten) with 
 * any coord on the grid in layout. Note, everything must snap to grid
 */
-wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2) {
-    int count = 0; 
+wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2, int * count_ptr) {
+    int count = 0;
     gate_t * g1 = &(layout->all_gates[gaten]); 
     gate_t * g2 = layout->grid[c2.x+layout->x_size*c2.y];
     layout->grid[g1->x+layout->x_size*g1->y] = g2; 
@@ -47,6 +47,7 @@ wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2) {
     count += 1 + g1->fanin_size; 
 
     wire_n * recalc = malloc(sizeof(wire_n)*count+1); 
+    *count_ptr += count; 
     count = 0; 
     recalc[0] = g1->fanout; 
     for (count = 1; count <= g1->fanin_size; count++) {
@@ -59,6 +60,7 @@ wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2) {
             recalc[count+i] = g2->fanin[i]; 
         }
     }    
+    *count_ptr += count; 
     return recalc; 
 }
 /*
@@ -71,7 +73,7 @@ layout_t * annealer_anneal(layout_t * layout, int wirelength) {
         annealer_createInitialPlacement(layout);
         wirelength = netlist_layoutWirelength(layout);  
     }
-    return annealer_simulatedAnnealing(layout,wirelength,200.0);
+    return annealer_simulatedAnnealing(layout,wirelength,2000.0);
 }
 /*
  * Use probablity magic to determine if a adverse swap is accepted
@@ -113,36 +115,31 @@ layout_t * annealer_simulatedAnnealing(
         swap_back.x = layout->all_gates[rand_gate].x;
         swap_back.y = layout->all_gates[rand_gate].y; 
         //Make a random swap
-        recalc = annealer_swapGates(layout,rand_gate,swap_coor);
-        count = 0; 
-        while (recalc[count]) {
-            pre_wirelength += layout->all_wires[recalc[count]].wirelength;
-            post_wirelength += netlist_wireWirelength(layout,recalc[count]);
-            count++; 
-        }
+        count = 0;
+        recalc = annealer_swapGates(layout,rand_gate,swap_coor,&count);
+        for (int i = 0; i < count; i++) {
+            pre_wirelength += layout->all_wires[recalc[i]].wirelength;
+            post_wirelength += netlist_wireWirelength(layout,recalc[i]);
+        }    
         free(recalc);
         deltaT = pre_wirelength - post_wirelength;  
         if ((deltaT < 0 ) && !annealer_acceptSwap(deltaT,tempature)) {
             //Swap back rejects
             //TODO: optimize this 
-            recalc = annealer_swapGates(layout,rand_gate,swap_back);
+            recalc = annealer_swapGates(layout,rand_gate,swap_back, &count);
             count = 0; 
             while (recalc[count]) {
                 netlist_wireRevertWirelength(layout,recalc[count]);
-                //netlist_wireWirelength(layout,recalc[count]);
                 count++;
             }
             free(recalc);
         } else {
-            if (deltaT == 0 && stall++ > 500) {
+            if (deltaT <= 0 && stall++ > 500) {
                 break;
             } else if (deltaT > 0) {
                 stall = 0;
-            //    if (tempature > 0.001) {
-                    tempature-=0.0001;
-            //    } else {
-            //        tempature = 0;
-            //    }
+                //tempature /=1.00001;
+                tempature-=0.0001;
             }
             wirelength -= deltaT; 
             //Display after 10k changes
