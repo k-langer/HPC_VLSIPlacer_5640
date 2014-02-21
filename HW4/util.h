@@ -45,10 +45,11 @@ void init_vects(size_t vect_len,float *vect1,float *vect2){
  * @return - true if result is correct, otherwise false
  */
 bool verify(size_t vect_len,float *vect1,float *vect2,float *result){
+  float tmp_result = 0;
   for(size_t i = 0 ; i < vect_len; i++){
-    float tmp_result = vect1[i] + vect2[i];
+    tmp_result = vect1[i] + vect2[i];
     if(tmp_result != result[i]){
-      return false;
+       return false;
     }
   }
   return true;

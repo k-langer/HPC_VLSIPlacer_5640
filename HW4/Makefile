@@ -13,3 +13,8 @@ $(TARGET): $(OBJS)
 	$(C) $(CFLAGS) -o $@ $^
 clean:
 	rm -f $(TARGET)
+	rm -f output.txt
+	rm -f qsub.sh.*
+test:
+	qsub ./qsub.sh
+

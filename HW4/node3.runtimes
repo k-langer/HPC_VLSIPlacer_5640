@@ -1,0 +1,24 @@
+Elements: 100
+	GPU time (ms): 0.0970
+		Kernel Time: 0.0282
+	CPU time (ms): 0.0010
+Elements: 200
+	GPU time (ms): 0.0840
+		Kernel Time: 0.0281
+	CPU time (ms): 0.0020
+Elements: 1000
+	GPU time (ms): 0.1810
+		Kernel Time: 0.0777
+	CPU time (ms): 0.0100
+Elements: 128
+	GPU time (ms): 0.0820
+		Kernel Time: 0.0279
+	CPU time (ms): 0.0010
+Elements: 256
+	GPU time (ms): 0.1670
+		Kernel Time: 0.0731
+	CPU time (ms): 0.0030
+Elements: 1024
+	GPU time (ms): 0.0900
+		Kernel Time: 0.0292
+	CPU time (ms): 0.0050
