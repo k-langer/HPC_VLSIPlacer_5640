@@ -3,10 +3,8 @@
 #include <fcntl.h>
 #include "string.h"
 
-
 #define DEFAULT_THRESHOLD  4000
-
-#define DEFAULT_FILENAME "BWstop-sign.ppm"
+#define DEFAULT_FILENAME "bw_stopsign.ppm"
 
 unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){
   
@@ -35,9 +33,8 @@ unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){
 
     unsigned int width, height, maxvalue;
 
-
     char *ptr = chars+3; // P 6 newline
-    if (*ptr == '#') // comment line! {
+    if (*ptr == '#') { // comment line! 
         ptr = 1 + strstr(ptr, "\n");
     }
 
@@ -81,7 +78,7 @@ unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){
     line = strstr(line, duh);
 
 
-    fprintf(stderr, "%s found at offset %d\n", duh, line - chars);
+    fprintf(stderr, "%s found at offset %ld\n", duh, line - chars);
     line += strlen(duh) + 1;
 
     long offset = line - chars;
@@ -89,10 +86,9 @@ unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){
     fseek(fp, offset, SEEK_SET); // move to the correct offset
     //long numread = read(fd, buf, bufsize);
     long numread = fread(buf, sizeof(char), bufsize, fp);
-    fprintf(stderr, "Texture %s   read %ld of %ld bytes\n", filename, numread, bufsize); 
+    fprintf(stderr, "Texture %s   read %ld of %d bytes\n", filename, numread, bufsize); 
 
     fclose(fp);
-
 
     int pixels = (*xsize) * (*ysize);
     for (int i=0; i<pixels; i++) { 
@@ -101,54 +97,37 @@ unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){
     return pic; // success
 }
 
-
-
-
-
-
-
-
-
-
-
-
 void write_ppm( char *filename, int xsize, int ysize, int maxval, int *pic) 
 {
-  FILE *fp;
-  int x,y;
-  
-  fp = fopen(filename, "w");
-  if (!fp) 
+    FILE *fp;
+    //never used
+    //int x,y;
+
+    fp = fopen(filename, "w");
+    if (!fp) 
     {
-      fprintf(stderr, "FAILED TO OPEN FILE '%s' for writing\n");
+      fprintf(stderr, "FAILED TO OPEN FILE '%s' for writing\n",filename);
       exit(-1); 
-    }
-  
-  
-  
-  fprintf(fp, "P6\n"); 
-  fprintf(fp,"%d %d\n%d\n", xsize, ysize, maxval);
-  
-  int numpix = xsize * ysize;
-  for (int i=0; i<numpix; i++) {
+    }  
+
+    fprintf(fp, "P6\n"); 
+    fprintf(fp,"%d %d\n%d\n", xsize, ysize, maxval);
+
+    int numpix = xsize * ysize;
+    for (int i=0; i<numpix; i++) {
     unsigned char uc = (unsigned char) pic[i];
     fprintf(fp, "%c%c%c", uc, uc, uc); 
-  }
-  fclose(fp);
-
+    }
+    fclose(fp);
 }
-
-
-
 
 int main( int argc, char **argv )
 {
+    int thresh = DEFAULT_THRESHOLD;
+    char *filename;
+    filename = strdup( DEFAULT_FILENAME);
 
-  int thresh = DEFAULT_THRESHOLD;
-  char *filename;
-  filename = strdup( DEFAULT_FILENAME);
-  
-  if (argc > 1) {
+    if (argc > 1) {
     if (argc == 3)  { // filename AND threshold
       filename = strdup( argv[1]);
        thresh = atoi( argv[2] );
@@ -159,53 +138,51 @@ int main( int argc, char **argv )
     }
 
     fprintf(stderr, "file %s    threshold %d\n", filename, thresh); 
-  }
-
-
-  int xsize, ysize, maxval;
-  unsigned int *pic = read_ppm( filename, &xsize, &ysize, &maxval ); 
-
-
-  int numbytes =  xsize * ysize * 3 * sizeof( int );
-  int *result = (int *) malloc( numbytes );
-  if (!result) { 
-    fprintf(stderr, "sobel() unable to malloc %d bytes\n", numbytes);
-    exit(-1); // fail
-  }
-
-  int i, j, magnitude, sum1, sum2; 
-  int *out = result;
-
-  for (int col=0; col<ysize; col++) {
-    for (int row=0; row<xsize; row++) { 
-      *out++ = 0; 
     }
-  }
 
-  for (i = 1;  i < ysize - 1; i++) {
-    for (j = 1; j < xsize -1; j++) {
-      
-      int offset = i*xsize + j;
 
-      sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
-        + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
-        +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
-      
-      sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ]
-            - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
-      
-      magnitude =  sum1*sum1 + sum2*sum2;
+    int xsize, ysize, maxval;
+    unsigned int *pic = read_ppm( filename, &xsize, &ysize, &maxval ); 
 
-      if (magnitude > thresh)
-        result[offset] = 255;
-      else 
-        result[offset] = 0;
+
+    int numbytes =  xsize * ysize * 3 * sizeof( int );
+    int *result = (int *) malloc( numbytes );
+    if (!result) { 
+        fprintf(stderr, "sobel() unable to malloc %d bytes\n", numbytes);
+        exit(-1); // fail
     }
-  }
 
-  write_ppm( "result.ppm", xsize, ysize, 255, result);
+    int i, j, magnitude, sum1, sum2; 
+    int *out = result;
 
-  fprintf(stderr, "sobel done\n"); 
+    for (int col=0; col<ysize; col++) {
+        for (int row=0; row<xsize; row++) { 
+          *out++ = 0; 
+        }
+    }
 
+    for (i = 1;  i < ysize - 1; i++) {
+        for (j = 1; j < xsize -1; j++) {
+          
+          int offset = i*xsize + j;
+
+          sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
+            + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
+            +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
+          
+          sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ]
+                - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
+          
+          magnitude =  sum1*sum1 + sum2*sum2;
+
+          if (magnitude > thresh)
+            result[offset] = 255;
+          else 
+            result[offset] = 0;
+        }
+    }
+    write_ppm( "result.ppm", xsize, ysize, 255, result);
+
+    fprintf(stderr, "sobel done\n"); 
 }
 
