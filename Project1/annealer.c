@@ -73,7 +73,7 @@ layout_t * annealer_anneal(layout_t * layout, int wirelength) {
         annealer_createInitialPlacement(layout);
         wirelength = netlist_layoutWirelength(layout);  
     }
-    return annealer_simulatedAnnealing(layout,wirelength,2000.0);
+    return annealer_simulatedAnnealing(layout,wirelength,200.0);
 }
 /*
  * Use probablity magic to determine if a adverse swap is accepted

@@ -3,7 +3,7 @@
 
 from Tkinter import Tk, Canvas, Frame, BOTH, W
 import re, sys, os
-scale_c = 3
+scale_c = 6
 margin =40
 x_origin = 0*scale_c
 y_origin = 0*scale_c
@@ -39,9 +39,9 @@ class Draw_Layout(Frame):
             canvas.create_rectangle(tlx, tly, \
                 brx, bry, \
                 tags="Obj",outline=fill_t, fill=fill_t)
-            #canvas.create_text(brx+scale_c/10,(bry+tly)/2, \
-            #    anchor=W,font="Helvetica",\
-            #    text=gate[0])
+           # canvas.create_text(brx+scale_c/10,(bry+tly)/2, \
+           #     anchor=W,font="Helvetica",\
+           #     text=gate[0])
         for port in self.ports:
             y_fix_port = 0; 
             x_fix_port = 0; 
@@ -59,9 +59,9 @@ class Draw_Layout(Frame):
             tlx = brx + scale_c                
             canvas.create_rectangle(tlx, tly, brx, bry,
                 tags="Obj",outline="black", fill="green")
-            #canvas.create_text(brx+scale_c/10,(bry+tly)/2, \
-            #    anchor=W,font="Helvetica",\
-            #    text=port[0])           
+            canvas.create_text(brx+scale_c/10,(bry+tly)/2, \
+                anchor=W,font="Helvetica",\
+                text=port[0])           
         canvas.pack(fill=BOTH, expand=1)
 def key(event):
     x = event.char
