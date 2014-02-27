@@ -14,6 +14,8 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(C) $(CFLAGS) $(IGNORE) $(DEBUG) $(CPARFLAGS) -o $@ $^
+seq:
+	$(C) $(CFLAGS) $(IGNORE) $(DEBUG) $(CPARFLAGS) -o seq org_sobel.c
 clean:
 	rm -f *.o $(TARGET) result.ppm
 	rm -f core*
