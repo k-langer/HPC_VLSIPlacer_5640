@@ -1,5 +1,5 @@
 C=gcc
-CFLAGS=-Wall -std=gnu99 -lm  
+CFLAGS=-Wall   -std=gnu99
 IGNORE=-Wno-format-contains-nul -Wno-unused-result 
 CPARFLAGS=-fopenmp
 TARGET=HW5
