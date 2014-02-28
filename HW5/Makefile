@@ -1,23 +1,27 @@
 C=gcc
+CPP=g++
+NVCC=nvcc
+NVFLAGS=-g -G -arch=sm_20 
 CFLAGS=-Wall   -std=gnu99
 IGNORE=-Wno-format-contains-nul -Wno-unused-result 
 CPARFLAGS=-fopenmp
 TARGET=HW5
 #DEBUG=-g -ggdb -pg
 
-OBJS = sobel.c
-
 #%.o: %.c
 #	$(C)$(CFLAGS) -c $<
 
-all: $(TARGET)
+all: HW5_seq HW5_par HW5_cuda
 
-$(TARGET): $(OBJS)
-	$(C) $(CFLAGS) $(IGNORE) $(DEBUG) $(CPARFLAGS) -o $@ $^
-seq:
-	$(C) $(CFLAGS) $(IGNORE) $(DEBUG) $(CPARFLAGS) -o seq org_sobel.c
+HW5_seq: sobel_seq.c
+	$(C) $(CFLAGS) $(IGNORE) $(DEBUG) $(CPARFLAGS) -o HW5_seq sobel_seq.c
+HW5_par: sobel_par.c
+	$(C) $(CFLAGS) $(IGNORE) $(DEBUG) $(CPARFLAGS) -o HW5_par sobel_par.c
+HW5_cuda: sobel_cuda.cu
+	$(NVCC) $(NVFLAGS) -o HW5_cuda sobel_cuda.cu
+	
 clean:
-	rm -f *.o $(TARGET) result.ppm
-	rm -f core*
+	rm -f *.o result.ppm
+	rm -f HW5_*
 test:
 	rm -f result.ppm && ./$(TARGET) && eog result.ppm

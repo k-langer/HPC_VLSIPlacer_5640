@@ -10,26 +10,27 @@
 #include <sys/time.h>
 
 using namespace std;
-// const int N = 16;
-// const int blocksize = 16;
+void write_ppm( char*, int, int, int, int*); 
+unsigned int *read_ppm( char *, int *, int *, int *);
+
 __global__ void sobel (int * result, unsigned int * pic, int xsize, int ysize, int thresh) {
-    int i = blockIdx.x * blockDim.x + threadIdx.x; 
-    int j = blockIdx.y * blockDim.y + threadIdx.y; 
+    int j = blockIdx.x * blockDim.x + threadIdx.x; 
+    int i = blockIdx.y * blockDim.y + threadIdx.y; 
     int magnitude, sum1, sum2; 
-    for (i = 1;  i < ysize-1; i++) {
-        for (j = 1; j < xsize -1; j++) {
+    sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
+        + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
+        +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
 
-            sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
-                + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
-                +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
+    sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ]
+        - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
 
-            sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ]
-                - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
-
-            magnitude =  ((sum1*sum1 + sum2*sum2)>thresh) * 255;
-            result[i*xsize+j] = magnitude;
-        }
-    }       
+    if ((sum1*sum1 + sum2*sum2)>thresh) {
+        magnitude = 255;
+    } else {
+        magnitude = 0;
+    }
+    //printf("i j %d %d %d\n",i,j,pic[i*j]);
+    result[i*xsize+j] = magnitude;
 }
 
 int main(int argc,char ** argv){
@@ -48,15 +49,16 @@ int main(int argc,char ** argv){
     }
 
     fprintf(stderr, "file %s    threshold %d\n", filename, thresh); 
+    }
+
     int xsize, ysize, maxval;
-    unsigned int *pic = read_ppm( filename, &xsize, &ysize, &maxval ); 
+    unsigned int * pic = read_ppm( filename, &xsize, &ysize, &maxval ); 
     int numbytes =  xsize * ysize * 3 * sizeof( int );
     int *result = (int *) malloc( numbytes );
     if (!result) { 
         fprintf(stderr, "sobel() unable to malloc %d bytes\n", numbytes);
         exit(-1); // fail
     }
-    int i, j, magnitude, sum1, sum2; 
     int *out = result;
 
     for (int col=0; col<ysize; col++) {
@@ -70,27 +72,26 @@ int main(int argc,char ** argv){
     float time =0;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
-    timeval t1, t2, t3, t4;
-    int *result_d,*pic_d;
-    cudaMalloc((void**)&result_d,numbytes);
-    cudaMalloc((void**)&pic_d,numbytes);
+    timeval t1, t2;
+    int *result_d;
+    unsigned int *pic_d;
+    
+    int size = xsize*ysize*sizeof(int);
     gettimeofday(&t1, NULL);
-    cudaMemcpy(result_d,result,numbytes,cudaMemcpyHostToDevice);
-    cudaMemcpy(pic_d,pic,numbytes,cudaMemcpyHostToDevice);
-    //setup block and grid size
-    dim3 grid(xsize,ysize);
-    // call device kernel
+    cudaMalloc((void**)&pic_d,size);
+    cudaMalloc((void**)&result_d,size);
+    cudaMemcpy(result_d,result,size,cudaMemcpyHostToDevice);
+    cudaMemcpy(pic_d,pic,size,cudaMemcpyHostToDevice);
+    dim3 blocks(16,16);
+    dim3 grid(xsize/blocks.x, ysize/blocks.y);
     cudaEventRecord(start,0);
-    sobel<<<grid,1>>>(result, pic, xsize, ysize, thresh);
-    cudaEventRecord(stop,0);
+    sobel<<<grid,blocks>>>(result_d, pic_d, xsize, ysize, thresh);
     cudaEventSynchronize(stop);
+    cudaMemcpy(result,result_d,size,cudaMemcpyDeviceToHost);
     cudaEventElapsedTime(&time,start,stop);
-    // copy data from device 
-    cudaMemcpy(result,result_d,numbytes,cudaMemcpyDeviceToHost);
-    gettimeofday(&t2, NULL);
-    // free device memory    
     cudaFree(result_d);
     cudaFree(pic_d);
+    gettimeofday(&t2, NULL);
     double  elapsedTime = (t2.tv_sec - t1.tv_sec)*1000.0 + (t2.tv_usec - t1.tv_usec)/1000.0;
     printf("\tGPU time (ms): %.4f\n\t\tKernel Time: %.4f\n",elapsedTime,time);
 
@@ -99,8 +100,9 @@ int main(int argc,char ** argv){
     fprintf(stderr, "sobel done\n"); 
     return 0;
 }
-unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){
-  
+
+
+unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){  
     if ( !filename || filename[0] == '\0') {
       fprintf(stderr, "read_ppm but no file name\n");
       return NULL;  // fail
