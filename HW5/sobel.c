@@ -3,26 +3,24 @@
 #include <fcntl.h>
 #include "string.h"
 #include <omp.h>
+#include <time.h>
 
 #define DEFAULT_THRESHOLD  4000
 #define DEFAULT_FILENAME "bw_stopsign.ppm"
 void sobel (int * result, unsigned int * pic, int xsize, int ysize, int thresh) {
     int i, j, magnitude, sum1, sum2; 
-    int offset,elms,block;
+    int block, su_block;
     int nthreads,tid;
     //omp_set_dynamic(0);  
     //omp_set_num_threads(16); 
-    #pragma omp parallel private(nthreads,tid,sum1,sum2,offset,magnitude,elms,block,i,j)
+    #pragma omp parallel private(nthreads,tid,sum1,sum2,magnitude,block,su_block,i,j)
     {
-        tid = omp_get_thread_num();
-        nthreads = omp_get_num_threads();
-        block = (ysize-1)*(xsize-1)/nthreads;
-        //printf("Size %d\n",(ysize-1)*(xsize-1));
-        //printf("%d %d\n",block*tid,block*tid+block);
-        for (elms = 0 + (block*tid); elms < block*tid + block ; elms++) {
-            j = elms % (xsize-1) + 1;
-            i = elms/(xsize-1) + 1;
-            offset = i*xsize + j;
+    tid = omp_get_thread_num();
+    nthreads = omp_get_num_threads();
+    block = (ysize-1)/nthreads;
+    su_block = block*tid;
+    for (i = 1+su_block;  i < su_block+block; i++) {
+        for (j = 1; j < xsize -1; j++) {
 
             sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
                 + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
@@ -32,7 +30,8 @@ void sobel (int * result, unsigned int * pic, int xsize, int ysize, int thresh) 
                 - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
 
             magnitude =  ((sum1*sum1 + sum2*sum2)>thresh) * 255;
-            result[offset] = magnitude;
+            result[i*xsize+j] = magnitude;
+            }
         }       
     }
 }
@@ -189,7 +188,11 @@ int main( int argc, char **argv )
           *out++ = 0; 
         }
     }
+    clock_t start = clock(), diff;
     sobel (result, pic, xsize, ysize, thresh);
+    diff = clock() - start;
+    int msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("Kernel time: %d s %d ms\n", msec/1000, msec%1000);
     write_ppm( "result.ppm", xsize, ysize, 255, result);
 
     fprintf(stderr, "sobel done\n"); 
