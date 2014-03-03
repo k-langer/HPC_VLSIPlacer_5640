@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include "string.h"
+#include <time.h>
 
 #define DEFAULT_THRESHOLD  4000
 #define DEFAULT_FILENAME "bw_stopsign.ppm"
@@ -160,6 +161,9 @@ int main( int argc, char **argv )
           *out++ = 0; 
         }
     }
+    clock_t start = clock(), diff;
+    diff = clock() - start;
+    int msec = diff * 1000 / CLOCKS_PER_SEC;
 
     for (i = 1;  i < ysize - 1; i++) {
         for (j = 1; j < xsize -1; j++) {
@@ -181,6 +185,7 @@ int main( int argc, char **argv )
             result[offset] = 0;
         }
     }
+    printf("Kernel time: %d s %d ms\n", msec/1000, msec%1000);
     write_ppm( "result.ppm", xsize, ysize, 255, result);
 
     fprintf(stderr, "sobel done\n"); 

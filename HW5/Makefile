@@ -23,5 +23,6 @@ HW5_cuda: sobel_cuda.cu
 clean:
 	rm -f *.o result.ppm
 	rm -f HW5_*
+	rm -f qsub.sh\.* qsub_std.sh\.*
 test:
 	rm -f result.ppm && ./$(TARGET) && eog result.ppm

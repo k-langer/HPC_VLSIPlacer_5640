@@ -72,12 +72,11 @@ int main(int argc,char ** argv){
     float time =0;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
-    timeval t1, t2;
+    clock_t start_st = clock(), diff;
     int *result_d;
     unsigned int *pic_d;
     
     int size = xsize*ysize*sizeof(int);
-    gettimeofday(&t1, NULL);
     cudaMalloc((void**)&pic_d,size);
     cudaMalloc((void**)&result_d,size);
     cudaMemcpy(result_d,result,size,cudaMemcpyHostToDevice);
@@ -91,9 +90,10 @@ int main(int argc,char ** argv){
     cudaEventElapsedTime(&time,start,stop);
     cudaFree(result_d);
     cudaFree(pic_d);
-    gettimeofday(&t2, NULL);
-    double  elapsedTime = (t2.tv_sec - t1.tv_sec)*1000.0 + (t2.tv_usec - t1.tv_usec)/1000.0;
-    printf("\tGPU time (ms): %.4f\n\t\tKernel Time: %.4f\n",elapsedTime,time);
+    diff = clock() - start_st;
+    int msec = diff * 1000 / CLOCKS_PER_SEC;
+    printf("Kernel time: %d s %d ms\n", msec/1000, msec%1000);
+    printf("Kernel Time: %.4f\n",time);
 
     write_ppm( "result.ppm", xsize, ysize, 255, result);
 
