@@ -1,12 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include "string.h"
 #include <time.h>
+#include "string.h"
 
 #define DEFAULT_THRESHOLD  4000
 #define DEFAULT_FILENAME "bw_stopsign.ppm"
 
+void sobel (int *result, unsigned int *pic, int xsize, int ysize, int thresh) {
+    int i, j, magnitude, sum1, sum2; 
+    for (i = 1;  i < ysize - 1; i++) {
+        for (j = 1; j < xsize -1; j++) {
+          
+          int offset = i*xsize + j;
+
+          sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
+            + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
+            +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
+          
+          sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ]
+                - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
+          
+          magnitude =  sum1*sum1 + sum2*sum2;
+
+          if (magnitude > thresh)
+            result[offset] = 255;
+          else 
+            result[offset] = 0;
+        }
+    }
+}
 unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){
   
     if ( !filename || filename[0] == '\0') {
@@ -140,9 +163,9 @@ int main( int argc, char **argv )
 
     fprintf(stderr, "file %s    threshold %d\n", filename, thresh); 
     }
-
-
     int xsize, ysize, maxval;
+
+
     unsigned int *pic = read_ppm( filename, &xsize, &ysize, &maxval ); 
 
 
@@ -153,7 +176,6 @@ int main( int argc, char **argv )
         exit(-1); // fail
     }
 
-    int i, j, magnitude, sum1, sum2; 
     int *out = result;
 
     for (int col=0; col<ysize; col++) {
@@ -162,31 +184,12 @@ int main( int argc, char **argv )
         }
     }
     clock_t start = clock(), diff;
+    sobel (result, pic, xsize, ysize, thresh);
     diff = clock() - start;
     int msec = diff * 1000 / CLOCKS_PER_SEC;
-
-    for (i = 1;  i < ysize - 1; i++) {
-        for (j = 1; j < xsize -1; j++) {
-          
-          int offset = i*xsize + j;
-
-          sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
-            + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
-            +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
-          
-          sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ]
-                - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
-          
-          magnitude =  sum1*sum1 + sum2*sum2;
-
-          if (magnitude > thresh)
-            result[offset] = 255;
-          else 
-            result[offset] = 0;
-        }
-    }
     printf("Kernel time: %d s %d ms\n", msec/1000, msec%1000);
-    write_ppm( "result.ppm", xsize, ysize, 255, result);
+
+	//write_ppm( "result.ppm", xsize, ysize, 255, result);
 
     fprintf(stderr, "sobel done\n"); 
 }

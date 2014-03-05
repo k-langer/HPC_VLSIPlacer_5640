@@ -21,8 +21,7 @@ void sobel (int * result, unsigned int * pic, int xsize, int ysize, int thresh) 
     su_block = block*tid;
     for (i = 1+su_block;  i < su_block+block; i++) {
         for (j = 1; j < xsize -1; j++) {
-
-            sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
+			sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
                 + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
                 +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
 
@@ -193,7 +192,7 @@ int main( int argc, char **argv )
     diff = clock() - start;
     int msec = diff * 1000 / CLOCKS_PER_SEC;
     printf("Kernel time: %d s %d ms\n", msec/1000, msec%1000);
-    write_ppm( "result.ppm", xsize, ysize, 255, result);
+    //write_ppm( "result.ppm", xsize, ysize, 255, result);
 
     fprintf(stderr, "sobel done\n"); 
 }
