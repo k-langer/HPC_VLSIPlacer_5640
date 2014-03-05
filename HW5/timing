@@ -1,3 +1,4 @@
+On Master:
 bw_stopsign.ppm
     Sequential: 10ms
     OpenMP: 540ms
@@ -5,5 +6,11 @@ bw_stopsign.ppm
 earth.ppm (nasa stich of earth)
     Sequential: 2s 31ms
     OpenMP: 798ms 
-    Cuda: 1s 206ms
-    
+    Cuda: 1s 206ms 
+On Node2:
+earth.ppm:
+    Sequential: 2s 259ms
+    OpenMP: 896ms
+    Cuda: 971ms
+
+Note: Time is linux wall time

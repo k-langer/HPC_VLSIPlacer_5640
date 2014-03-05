@@ -192,7 +192,7 @@ int main( int argc, char **argv )
     diff = clock() - start;
     int msec = diff * 1000 / CLOCKS_PER_SEC;
     printf("Kernel time: %d s %d ms\n", msec/1000, msec%1000);
-    //write_ppm( "result.ppm", xsize, ysize, 255, result);
+    write_ppm( "result.ppm", xsize, ysize, 255, result);
 
     fprintf(stderr, "sobel done\n"); 
 }
