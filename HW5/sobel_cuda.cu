@@ -86,14 +86,14 @@ int main(int argc,char ** argv){
     cudaEventRecord(start,0);
     sobel<<<grid,blocks>>>(result_d, pic_d, xsize, ysize, thresh);
     cudaEventSynchronize(stop);
-    cudaMemcpy(result,result_d,size,cudaMemcpyDeviceToHost);
     cudaEventElapsedTime(&time,start,stop);
+    cudaMemcpy(result,result_d,size,cudaMemcpyDeviceToHost);
     cudaFree(result_d);
     cudaFree(pic_d);
     diff = clock() - start_st;
     int msec = diff * 1000 / CLOCKS_PER_SEC;
-    printf("Kernel time: %d s %d ms\n", msec/1000, msec%1000);
-    printf("Kernel Time: %.4f\n",time);
+    printf("Kernel time (with memcpy): %d s %d ms\n", msec/1000, msec%1000);
+    printf("Kernel time (without memcpy): %.4f\n",time);
 
     write_ppm( "result.ppm", xsize, ysize, 255, result);
 
