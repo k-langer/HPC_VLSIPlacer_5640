@@ -23,4 +23,5 @@ $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(DEBUG) 
 clean:
 	rm -f *.o parser placer
+	rm -f qsub\.*
 	rm -f core*
