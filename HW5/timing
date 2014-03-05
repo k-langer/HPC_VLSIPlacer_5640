@@ -1,0 +1,9 @@
+bw_stopsign.ppm
+    Sequential: 10ms
+    OpenMP: 540ms
+    Cuda: 0ms-10ms
+earth.ppm (nasa stich of earth)
+    Sequential: 2s 31ms
+    OpenMP: 798ms 
+    Cuda: 1s 206ms
+    
