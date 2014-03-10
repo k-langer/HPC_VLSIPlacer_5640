@@ -87,10 +87,10 @@ int netlist_wireRevertWirelength(layout_t * layout, wire_n wiren) {
     * First attempt caused significant problems and is **HIGH** on the do list
     * Note: will be hard to stay thread safe...
     */
-    wire_t * wire_tmp = &(layout->all_wires[wiren]); 
-    int old_wl = wire_tmp->wirelength; 
-    wire_tmp->wirelength = wire_tmp->prev_wirelength; 
-    wire_tmp->prev_wirelength = old_wl;
+    //wire_t * wire_tmp = &(layout->all_wires[wiren]); 
+    //int old_wl = wire_tmp->wirelength; 
+    //wire_tmp->wirelength = wire_tmp->prev_wirelength; 
+    //wire_tmp->prev_wirelength = old_wl;
     netlist_wireWirelength(layout,wiren);
     return 0;
 }

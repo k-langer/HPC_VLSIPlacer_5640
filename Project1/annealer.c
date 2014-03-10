@@ -117,9 +117,15 @@ layout_t * annealer_simulatedAnnealing(
         //Make a random swap
         count = 0;
         recalc = annealer_swapGates(layout,rand_gate,swap_coor,&count);
-        for (int i = 0; i < count; i++) {
+        /*for (int i = 0; i < count; i++) {
             pre_wirelength += layout->all_wires[recalc[i]].wirelength;
             post_wirelength += netlist_wireWirelength(layout,recalc[i]);
+        }*/
+        count = 0; 
+        while (recalc[count]) {
+             pre_wirelength += layout->all_wires[recalc[count]].wirelength;
+             post_wirelength += netlist_wireWirelength(layout,recalc[count]);
+             count++; 
         }    
         free(recalc);
         deltaT = pre_wirelength - post_wirelength;  
