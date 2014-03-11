@@ -6,14 +6,14 @@
 #include "rand.h"
 
 void production(layout_t * layout);
-void benchmark(layout_t * layout);
+void benchmark(layout_t * layout, char * name);
 int main(int argc, char**argv) {
     layout_t *layout = parser_parseNetlist(argv[1]); 
     if (!layout) {
         return -1;
     }
     rand_init(); 
-    benchmark(layout);
+    benchmark(layout,argv[1]);
     //production(layout); 
     return 0;
 }
@@ -33,20 +33,22 @@ void production(layout_t * layout) {
     printf("Time: %d s %d ms\n", msec/1000, msec%1000);
 
 }
-void benchmark(layout_t * layout) {
+void benchmark(layout_t * layout, char * name) {
+    struct timeval start, end;
     for (int iterations = 0; iterations < 5; iterations++) {
         for (int threads = 0; threads < 16; threads++) {
+            layout_t *layout = parser_parseNetlist(name); 
             annealer_createInitialPlacement(layout);
             int sum1 = netlist_layoutWirelength(layout);
-            clock_t start = clock(), diff;
+            gettimeofday(&start, NULL);
             annealer_anneal(layout,sum1,threads);
-            diff = clock() - start;
+            gettimeofday(&end, NULL);
             int sum = netlist_layoutWirelength(layout);
-            int msec = diff * 1000 / CLOCKS_PER_SEC;
+            long int sec = ((end.tv_sec * 1000000 + end.tv_usec)-(start.tv_sec * 1000000 + start.tv_usec));
             netlist_free(layout);
-            printf("%d\t%d\t%d\t%d\n",threads,msec/1000,sum,sum1);
+            printf("%d\t%ld\t%d\t%d\n",threads,sec,sum,sum1);
+            netlist_free(layout);
         }
     }
-    netlist_free(layout);
 }
 

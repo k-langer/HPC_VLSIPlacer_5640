@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 #include <time.h>
+#include <sys/time.h>
 #include <math.h>
 #include <omp.h>
 #define PASS 0
