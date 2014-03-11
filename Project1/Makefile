@@ -1,8 +1,9 @@
 CC=gcc
-OPT=-O3 -march=corei7 -mtune=corei7-avx
+#OPT=-O3 -march=corei7 -mtune=corei7-avx
+OPT=-O2
 CFLAGS=-Wall -std=gnu99 -Wno-unused-result -lm  
-DEBUG=-g -ggdb -pg
-#CPARFLAGS=-fopenmp
+#DEBUG=-g -ggdb -pg
+CPARFLAGS=-fopenmp
 #RDRAND=-D IVYHASWELL
 #ANNEALER=-D NO_ANNEALER
 TARGET=placer

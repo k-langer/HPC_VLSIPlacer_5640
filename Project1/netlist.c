@@ -1,5 +1,28 @@
 #include "netlist.h"
 #include "common.h"
+
+/* Verify results independant of the calculations done by the placer
+*/
+void netlist_verifyResults(layout_t * layout) {
+    int gateCount = 0; 
+    for (int i = 0; i < layout->x_size; i++) {
+        for (int j = 0; j < layout->y_size; j++) {
+            if ( layout->grid[i+layout->x_size*j] ) {
+                gateCount++; 
+            }
+        }   
+    }
+    assert(gateCount == layout->size_gates); 
+    double mean = netlist_layoutWirelength(layout) / (layout->size_wires + 0.0); 
+    double var = 0;
+    double tmp = 0; 
+    for (int i = 0; i < layout->size_wires; i++)  {
+        tmp = (mean-layout->all_wires[i].wirelength);
+        var += tmp*tmp;
+    }
+    double stddev = sqrt(var);
+    printf("Mean: %f Std. Dev.: %f\n",mean,stddev);
+}   
 /* Calculate wirelength of whole netlist
 */
 int netlist_layoutWirelength(layout_t * layout) {

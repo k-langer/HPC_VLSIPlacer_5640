@@ -68,12 +68,12 @@ wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2, int * c
 * -Creates placement if needed
 * -Sets the initial tempature for annealing
 */
-layout_t * annealer_anneal(layout_t * layout, int wirelength) {
+layout_t * annealer_anneal(layout_t * layout, int wirelength,int threads) {
     if (!wirelength) {
         annealer_createInitialPlacement(layout);
         wirelength = netlist_layoutWirelength(layout);  
     }
-    return annealer_simulatedAnnealing(layout,wirelength,200.0);
+    return annealer_simulatedAnnealing(layout,wirelength,200.0,threads);
 }
 /*
  * Use probablity magic to determine if a adverse swap is accepted
@@ -97,15 +97,28 @@ bool_t annealer_acceptSwap(int deltaL, double T) {
  * TODO: Better pick tempature value and stall value for max QoR
 */
 layout_t * annealer_simulatedAnnealing(
-    layout_t * layout, int wirelength,double tempature) {
+    layout_t * layout, int wirelength,double tempature,int threads) {
+    int tid = 0;
+    int nthreads = 1;
+    omp_set_dynamic(0);  
+    omp_set_num_threads(threads);
+    #pragma omp parallel firstprivate(tid,layout,wirelength,tempature,nthreads) 
+    {
+    nthreads = omp_get_num_threads(); 
     int rand_gate; 
+    //tempature/=nthreads;
     coord_t swap_coor,swap_back;  
     wire_n * recalc; 
     int count; 
     int pre_wirelength, post_wirelength;
     int stall = 0; 
     int deltaT; 
-    int printWL = 100000000;
+    //int printWL = 100000000;
+    int swaps = 800000000;
+    /*
+    int printSP = swaps; 
+    tid = omp_get_thread_num();
+    */
     while (1) {
         pre_wirelength = 0;
         post_wirelength = 0;  
@@ -116,7 +129,10 @@ layout_t * annealer_simulatedAnnealing(
         swap_back.y = layout->all_gates[rand_gate].y; 
         //Make a random swap
         count = 0;
+        #pragma omp critical 
+        {
         recalc = annealer_swapGates(layout,rand_gate,swap_coor,&count);
+        }
         /*for (int i = 0; i < count; i++) {
             pre_wirelength += layout->all_wires[recalc[i]].wirelength;
             post_wirelength += netlist_wireWirelength(layout,recalc[i]);
@@ -128,32 +144,49 @@ layout_t * annealer_simulatedAnnealing(
              count++; 
         }    
         free(recalc);
-        deltaT = pre_wirelength - post_wirelength;  
+        deltaT = pre_wirelength - post_wirelength; 
         if ((deltaT < 0 ) && !annealer_acceptSwap(deltaT,tempature)) {
             //Swap back rejects
             //TODO: optimize this 
+            #pragma omp critical 
+            {
             recalc = annealer_swapGates(layout,rand_gate,swap_back, &count);
-            count = 0; 
+            }
+            count = 0;
             while (recalc[count]) {
                 netlist_wireRevertWirelength(layout,recalc[count]);
                 count++;
             }
+            stall++;
             free(recalc);
         } else {
-            if (deltaT <= 0 && stall++ > 500) {
+            /*
+            if (printSP - 10000  > swaps) {
+                printSP = swaps;
+                printf("%d heat: %f tid: %d\n",stall,tempature,tid);
+            }
+            */
+            if (tempature < -1) {
+                break;
+            }
+            if (deltaT <= 0 && stall++ > 20000) {
                 break;
             } else if (deltaT > 0) {
+                swaps--;
                 stall = 0;
                 //tempature /=1.00001;
-                tempature-=0.0001;
+                tempature-=0.000025*((nthreads+1)/2);
             }
+            /*
             wirelength -= deltaT; 
             //Display after 10k changes
             if (printWL > wirelength + 10000) {
                 printWL = wirelength;  
                 printf("WL: %d T %f\n",printWL,tempature);
             }
+            */
         } 
+    }
     }   
     return layout;
 }

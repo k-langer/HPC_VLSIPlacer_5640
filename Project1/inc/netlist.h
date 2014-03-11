@@ -91,7 +91,7 @@ typedef struct coord {
     int x; 
     int y; 
 } coord_t;
-
+void netlist_verifyResults(layout_t *);
 int netlist_wireWirelength(layout_t *, wire_n);
 int netlist_layoutWirelength(layout_t *); 
 void netlist_printNetlist(layout_t*); 
