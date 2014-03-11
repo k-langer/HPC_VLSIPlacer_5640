@@ -35,8 +35,8 @@ void production(layout_t * layout) {
 }
 void benchmark(layout_t * layout, char * name) {
     struct timeval start, end;
-    for (int iterations = 0; iterations < 5; iterations++) {
-        for (int threads = 1; threads < 16; threads++) {
+    for (int iterations = 0; iterations < 3; iterations++) {
+        for (int threads = 1; threads <= 4; threads++) {
             layout_t *layout = parser_parseNetlist(name); 
             annealer_createInitialPlacement(layout);
             int sum1 = netlist_layoutWirelength(layout);
