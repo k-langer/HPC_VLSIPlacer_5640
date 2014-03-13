@@ -115,10 +115,10 @@ layout_t * annealer_simulatedAnnealing(
     int deltaT; 
     //int printWL = 100000000;
     int swaps = 800000000;
-    /*
+    
     int printSP = swaps; 
     tid = omp_get_thread_num();
-    */
+    
     while (1) {
         pre_wirelength = 0;
         post_wirelength = 0;  
@@ -160,12 +160,13 @@ layout_t * annealer_simulatedAnnealing(
             stall++;
             free(recalc);
         } else {
-            /*
+            
+            #ifdef PRODUCTION
             if (printSP - 10000  > swaps) {
                 printSP = swaps;
                 printf("%d heat: %f tid: %d\n",stall,tempature,tid);
             }
-            */
+            #endif
             if (tempature < -1) {
                 break;
             }
