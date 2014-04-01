@@ -95,7 +95,7 @@ int main(int argc,char ** argv){
     printf("Kernel time (with memcpy): %d s %d ms\n", msec/1000, msec%1000);
     printf("Kernel time (without memcpy): %.4f\n",time);
 
-    write_ppm( "result.ppm", xsize, ysize, 255, result);
+    //write_ppm( "result.ppm", xsize, ysize, 255, result);
 
     fprintf(stderr, "sobel done\n"); 
     return 0;

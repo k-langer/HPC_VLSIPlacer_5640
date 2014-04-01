@@ -135,28 +135,21 @@ void write_ppm( char *filename, int xsize, int ysize, int maxval, int *pic)
 
 }
 
-__global__ void sobel_kernel(int xsize, int ysize, unsigned int *pic_d, int *result, int thresh) {
-  extern __shared__ unsigned int pic_s[];
-  unsigned int * pic = pic_s;
-  int i = blockIdx.y * blockDim.y + threadIdx.y;
-  int j = blockIdx.x * blockDim.x + threadIdx.x;
-  pic[i*xsize+j] = pic_d[i*xsize+j];
-  __syncthreads();
-  if( i > 0 && i < ysize - 1 && j > 0 && j < xsize - 1) {
-      int offset = i*xsize + j;
-      int sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
-        + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
-        +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
-      
-      int sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ] - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
-      
-      int magnitude =  sum1*sum1 + sum2*sum2;
-
-      if (magnitude > thresh)
-        result[offset] = 255;
-      else 
-        result[offset] = 0;
-  }
+__global__ void sobel_kernel(int xsize, int ysize, unsigned int *pic, int *result, int thresh) {
+  __shared__ unsigned int pic_d[100*100];
+  int i = blockIdx.y * blockDim.y + threadIdx.y+1;
+  int j = blockIdx.x * blockDim.x + threadIdx.x+1;
+ //pic_d[i*xsize+j] = pic[i*xsize+j];
+  // __syncthreads();
+  int offset = i*xsize + j;
+  int sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
+    + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
+    +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
+  
+  int sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ] - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
+  
+  int magnitude =  sum1*sum1 + sum2*sum2;
+  result[offset] = (magnitude > thresh) * 255;
 } 
 
 int main( int argc, char **argv )
@@ -210,13 +203,16 @@ int main( int argc, char **argv )
   cudaMalloc((void **) &pic_d, pic_size);
   cudaMemcpy(pic_d, pic, pic_size, cudaMemcpyHostToDevice);
   dim3 block(blockX, blockY);
-  dim3 grid((xsize + blockX - 1)/blockX, (ysize + blockY - 1)/blockY);
+  dim3 grid((xsize + blockX - 1)/blockX -2, (ysize + blockY - 1)/blockY-2);
   cudaEvent_t start, end;
   cudaEventCreate(&start);
   cudaEventCreate(&end);
 
   cudaEventRecord(start, 0);
-  sobel_kernel<<<grid, block, xsize*ysize*sizeof(unsigned int)>>>(xsize, ysize, pic_d, result_d, thresh); 
+  sobel_kernel<<<grid, block>>>(xsize, ysize, pic_d, result_d, thresh);
+  cudaError_t error = cudaGetLastError();  
+  if (cudaSuccess != error)
+    printf( "Error! %s\n",cudaGetErrorString(error) );
   cudaEventRecord(end, 0);
 
   cudaEventSynchronize(end);
