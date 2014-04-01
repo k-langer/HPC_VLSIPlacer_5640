@@ -136,20 +136,22 @@ void write_ppm( char *filename, int xsize, int ysize, int maxval, int *pic)
 }
 
 __global__ void sobel_kernel(int xsize, int ysize, unsigned int *pic, int *result, int thresh) {
-  __shared__ unsigned int pic_d[100*100];
-  int i = blockIdx.y * blockDim.y + threadIdx.y+1;
-  int j = blockIdx.x * blockDim.x + threadIdx.x+1;
+  __shared__ unsigned int pic_d[100][100];
+  int i = blockIdx.y * blockDim.y + threadIdx.y;
+  int j = blockIdx.x * blockDim.x + threadIdx.x;
  //pic_d[i*xsize+j] = pic[i*xsize+j];
   // __syncthreads();
-  int offset = i*xsize + j;
-  int sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
-    + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
-    +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
-  
-  int sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ] - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
-  
-  int magnitude =  sum1*sum1 + sum2*sum2;
-  result[offset] = (magnitude > thresh) * 255;
+  if( i > 0 && i < ysize - 1 && j > 0 && j < xsize - 1) {
+      int offset = i*xsize + j;
+      int sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
+        + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
+        +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
+      
+      int sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ] - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
+      
+      int magnitude =  sum1*sum1 + sum2*sum2;
+      result[offset] = (magnitude > thresh) * 255;
+  }
 } 
 
 int main( int argc, char **argv )
@@ -203,7 +205,7 @@ int main( int argc, char **argv )
   cudaMalloc((void **) &pic_d, pic_size);
   cudaMemcpy(pic_d, pic, pic_size, cudaMemcpyHostToDevice);
   dim3 block(blockX, blockY);
-  dim3 grid((xsize + blockX - 1)/blockX -2, (ysize + blockY - 1)/blockY-2);
+  dim3 grid((xsize + blockX - 1)/blockX, (ysize + blockY - 1)/blockY);
   cudaEvent_t start, end;
   cudaEventCreate(&start);
   cudaEventCreate(&end);
