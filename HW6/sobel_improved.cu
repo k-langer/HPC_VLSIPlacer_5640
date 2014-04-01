@@ -5,7 +5,6 @@
 
 
 #define DEFAULT_THRESHOLD  4000
-
 #define DEFAULT_FILENAME "BWstop-sign.ppm"
 
 unsigned int *read_ppm( char *filename, int * xsize, int * ysize, int *maxval ){
@@ -135,20 +134,32 @@ void write_ppm( char *filename, int xsize, int ysize, int maxval, int *pic)
 
 }
 
-__global__ void sobel_kernel(int xsize, int ysize, unsigned int *pic, int *result, int thresh) {
-  __shared__ unsigned int pic_d[100][100];
-  int i = blockIdx.y * blockDim.y + threadIdx.y;
-  int j = blockIdx.x * blockDim.x + threadIdx.x;
- //pic_d[i*xsize+j] = pic[i*xsize+j];
-  // __syncthreads();
+__global__ void sobel_kernel(int xsize, int ysize, unsigned int *pic, int *result, int thresh,int xoffset, int yoffset) {
+  int i = blockIdx.y * blockDim.y + threadIdx.y + 16*5*yoffset;
+  int j = blockIdx.x * blockDim.x + threadIdx.x + 16*5*xoffset;
+  int jx = j - 16*5*xoffset; 
+  int iy = i - 16*5*yoffset; 
+  __shared__ unsigned int pic_d[16*5*5*16]; 
+  if( i > -1 && i < ysize && j > -1 && j < xsize ) { 
+      pic_d[80*iy+jx]  = pic[i*xsize +j]; 
+      __syncthreads();
+  }
   if( i > 0 && i < ysize - 1 && j > 0 && j < xsize - 1) {
       int offset = i*xsize + j;
-      int sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[ xsize*(i-1) + j-1 ] 
+      int sum1,sum2;
+      /*int sum1 =  pic_d[ 80 * (iy-1) + jx+1 ] -     pic_d[80*iy + jx]
+        + 2 * pic_d[ 80 * (iy)   + jx+1 ] - 2 * pic_d[ 80*(iy)   + jx-1 ]
+        +     pic_d[ 80 * (iy+1) + jx+1 ] -     pic_d[ 80*(iy+1) + jx-1 ];
+      
+      int sum2 = pic_d[80*iy+jx]+ 2 * pic_d[ 80 * (iy-1) + jx ]  + pic_d[ 80 * (iy-1) + jx+1 ] - pic_d[80 * (iy+1) + jx-1 ] - 2 * pic_d[ 80 * (iy+1) + jx ] - pic_d[ 80 * (iy+1) + jx+1 ];
+      */
+      /*
+      int sum1 =  pic[ xsize * (i-1) + j+1 ] -     pic[xsize*i + j]
         + 2 * pic[ xsize * (i)   + j+1 ] - 2 * pic[ xsize*(i)   + j-1 ]
         +     pic[ xsize * (i+1) + j+1 ] -     pic[ xsize*(i+1) + j-1 ];
       
-      int sum2 = pic[ xsize * (i-1) + j-1 ] + 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ] - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
-      
+      int sum2 = pic[xsize*i+j]+ 2 * pic[ xsize * (i-1) + j ]  + pic[ xsize * (i-1) + j+1 ] - pic[xsize * (i+1) + j-1 ] - 2 * pic[ xsize * (i+1) + j ] - pic[ xsize * (i+1) + j+1 ];
+      */
       int magnitude =  sum1*sum1 + sum2*sum2;
       result[offset] = (magnitude > thresh) * 255;
   }
@@ -205,13 +216,19 @@ int main( int argc, char **argv )
   cudaMalloc((void **) &pic_d, pic_size);
   cudaMemcpy(pic_d, pic, pic_size, cudaMemcpyHostToDevice);
   dim3 block(blockX, blockY);
-  dim3 grid((xsize + blockX - 1)/blockX, (ysize + blockY - 1)/blockY);
+  //dim3 grid((xsize + blockX - 1)/blockX , (ysize + blockY - 1)/blockY);
+  dim3 grid(5,5);
   cudaEvent_t start, end;
   cudaEventCreate(&start);
   cudaEventCreate(&end);
 
   cudaEventRecord(start, 0);
-  sobel_kernel<<<grid, block>>>(xsize, ysize, pic_d, result_d, thresh);
+  for (int x = 0; x <= xsize/(16*5)+5; x++) {
+    for (int y = 0; y <= ysize/(16*5)+5; y++) {
+      sobel_kernel<<<grid, block>>>(xsize, ysize, pic_d, result_d, thresh,x,y);
+    }
+
+  }
   cudaError_t error = cudaGetLastError();  
   if (cudaSuccess != error)
     printf( "Error! %s\n",cudaGetErrorString(error) );
