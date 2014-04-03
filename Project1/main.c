@@ -21,6 +21,8 @@ int main(int argc, char**argv) {
     printf("Wirelength: %d %d\n",sum,sum1);
     */
     solver_quadraticWirelength(layout);
+    int sum = netlist_layoutWirelength(layout);
+    printf("Wirelength: %d\n",sum);
     
     //netlist_printNetlist(layout); 
     //netlist_printQoR(layout);

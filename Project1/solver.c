@@ -138,6 +138,12 @@ float * solver_jacobi(float * A, float * b, int size, int itt) {
     free(P); 
     return X; 
 }
+void solver_assignGates(layout_t * layout, float * x, float * y, int size) {
+    for (int i = 0; i < size; i++) {
+        (layout->all_gates+i)->x = rint( x[i] );
+        (layout->all_gates+i)->y = rint( y[i] );
+    }
+}
 /*
 * give a layout, preform a quadratic wirelength solve on it. 
 * turns out it is way faster than simulated annealing
@@ -155,10 +161,10 @@ void solver_quadraticWirelength(layout_t * layout) {
     float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,30);
     //solver_printAb(A_matrix, bx_matrix, by_matrix, size_gates);
     //solver_printMatrix(A_matrix,size_gates);
-    for (int i = 0; i < size_gates; i++) {
-        printf("%f %f\n",resultx[i],resulty[i]);
-    }
-    printf("\n");
+    //for (int i = 0; i < size_gates; i++) {
+    //    printf("%f %f\n",resultx[i],resulty[i]);
+    //}
+    solver_assignGates(layout,resultx,resulty,size_gates);
 }
 /*//DEPRECATED
 //was being used to print matrix for use in MATLAB testing
