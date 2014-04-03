@@ -123,6 +123,24 @@ hier_t * getHier(layout_t * layout, short hier_ptr) {
     }
     return rt;
 }
+void netlist_printForVisualizer(layout_t * layout) {
+    for (int i = 0; i < layout->size_gates; i++) {
+        float x = (layout->all_gates+i)->x + 0.0f;
+        float y = (layout->all_gates+i)->y + 0.0f;
+        printf("%d %f %f\n",i,x,y);
+    }
+}
+void netlist_printForMatlab(layout_t * layout) {
+    for (int i = 0; i < layout->size_gates; i++) {
+        float x = (layout->all_gates+i)->x + 0.0f;
+        printf("%f, ",x);
+    }
+    printf("\n");
+    for (int i = 0; i < layout->size_gates; i++) {
+        float y = (layout->all_gates+i)->y + 0.0f;
+        printf("%f, ",y);
+    }
+}
 void netlist_printQoR(layout_t * layout) {
    hier_t * hier; 
    for (int i = 0; i < layout->size_gates; i++) {

@@ -30,6 +30,7 @@ typedef struct port {
     wire_n wire; 
     int x; 
     int y;  
+    float weight; 
 } port_t; 
 /*
 * Gate:
@@ -98,4 +99,6 @@ void netlist_printNetlist(layout_t*);
 int netlist_wireRevertWirelength(layout_t *, wire_n);
 void netlist_printQoR(layout_t *); 
 void netlist_free(layout_t *); 
+void netlist_printForVisualizer(layout_t *); 
+void netlist_printForMatlab(layout_t *);
 #endif
