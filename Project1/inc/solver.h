@@ -14,4 +14,5 @@ void solver_printMatrix(float * C_matrix,int size_gates);
 float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matrix, float * by_matrix, float * C_matrix, int size_gates);
 void solver_printAb(float * A, float * bx, float * by, int size);
 float * solver_jacobi(float * A, float * b, int size, int itt);
+void solver_assignGates(layout_t * layout, float * x, float * y, int size);
 #endif 

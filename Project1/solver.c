@@ -138,10 +138,30 @@ float * solver_jacobi(float * A, float * b, int size, int itt) {
     free(P); 
     return X; 
 }
+void solver_assignGate(layout_t * layout, bool_t assigned, int depth, int ldepth, int x, int y, int *xr, int *yr) {
+    if (ldepth >= depth) {
+        if ((x >= 0 && x < layout->x_size) && (y >= 0 && y < layout->y_size)) {
+            if (!layout->grid[y*layout->x_size + x]) {
+                *yr = y; 
+                *xr = x; 
+                ldepth = depth; 
+                assigned = TRUE; 
+            } 
+        }
+        solver_assignGate(layout,assigned, depth+1, ldepth, x+1,y,xr,yr);
+        solver_assignGate(layout,assigned, depth+1, ldepth, x-1,y,xr,yr);
+        solver_assignGate(layout,assigned, depth+1, ldepth, x,y+1,xr,yr);
+        solver_assignGate(layout,assigned, depth+1, ldepth, x,y-1,xr,yr); 
+    }
+}
 void solver_assignGates(layout_t * layout, float * x, float * y, int size) {
+    printf("Assinging gates\n");
     for (int i = 0; i < size; i++) {
-        (layout->all_gates+i)->x = rint( x[i] );
-        (layout->all_gates+i)->y = rint( y[i] );
+        int xr,yr; 
+        solver_assignGate(layout,0,0,0,rint( x[i] ),rint( y[i] ),&xr,&yr);
+        printf("%d %d\n",xr,yr);
+        //(layout->all_gates+i)->x = rint( x[i] );
+        //(layout->all_gates+i)->y = rint( y[i] );
     }
 }
 /*
