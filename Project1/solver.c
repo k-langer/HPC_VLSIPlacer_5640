@@ -1,7 +1,7 @@
 #include "netlist.h"
 #include "common.h"
 #include "sort.h" 
-
+#include "jacobi.h"  
 //TODO: Implement numeric solver to get future GPU speedup 
 /*
 * For each wire, fill all relevant gates
@@ -41,7 +41,7 @@ float * createMatrix(int ysize, int xsize) {
     #ifdef OPT
     return (float *) memalign(16,sizeof(float)*ysize*xsize);
     #endif
-    return calloc(sizeof(float),ysize*xsize);
+    return (float *) calloc(sizeof(float),ysize*xsize);
 }
 /*
 * just print any square matrix to the console
@@ -212,6 +212,8 @@ void solver_quadraticWirelength(layout_t * layout) {
     solver_fillAbMatrix(layout,A_matrix,bx_matrix,by_matrix,size_gates); 
     float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,30);
     float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,30);
+    //float * resultx = jacobi_jacobi(A_matrix,bx_matrix,size_gates,30);
+    //float * resulty = jacobi_jacobi(A_matrix,by_matrix,size_gates,30);
     //solver_printAb(A_matrix, bx_matrix, by_matrix, size_gates);
     //solver_printMatrix(A_matrix,size_gates);
     solver_assignGates(layout,resultx,resulty,size_gates);

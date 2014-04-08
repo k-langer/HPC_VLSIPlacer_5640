@@ -3,8 +3,7 @@
 typedef int wire_n; 
 typedef int gate_n;
 typedef int port_n; 
-typedef unsigned char bool;
-
+typedef unsigned char boolean;
 /* Super Special Note, for all structures the largest bitwidth items
 * are placed at the top of the structure. This was to maximize packing
 * and minimize D$ problems. So that is why everything is in wony orders
@@ -51,7 +50,7 @@ typedef struct gate {
     int y;
     float xqp; 
     float yqp; 
-    bool RP; 
+    boolean RP; 
 } gate_t; 
 /*
 * Wire:

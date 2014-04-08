@@ -46,7 +46,7 @@ wire_n * annealer_swapGates(layout_t * layout, gate_n gaten, coord_t c2, int * c
     g1->y = c2.y;
     count += 1 + g1->fanin_size; 
 
-    wire_n * recalc = malloc(sizeof(wire_n)*count+1); 
+    wire_n * recalc = (wire_n*)malloc(sizeof(wire_n)*count+1); 
     *count_ptr += count; 
     count = 0; 
     recalc[0] = g1->fanout; 
