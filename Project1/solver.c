@@ -38,7 +38,10 @@ void solver_fillCMatrix(layout_t * layout, float *  C_matrix,int size) {
 * return a row/col matrix full of all zeros
 */
 float * createMatrix(int ysize, int xsize) {
-    return calloc(sizeof(float),ysize*xsize); 
+    #ifdef OPT
+    return (float *) memalign(16,sizeof(float)*ysize*xsize);
+    #endif
+    return calloc(sizeof(float),ysize*xsize);
 }
 /*
 * just print any square matrix to the console
@@ -110,8 +113,8 @@ float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matr
 * accompanying Matlab text.
 */
 float * solver_jacobi(float * A, float * b, int size, int itt) {
-    float * P = calloc(sizeof(float),size); 
-    float * X = calloc(sizeof(float),size);  
+    float * P = createMatrix(size,1);
+    float * X = createMatrix(size,1);
     if (!P || !X) {
         printf("OUT OF MEMORY ERROR (jacobi)\n");
     } 
@@ -126,9 +129,11 @@ float * solver_jacobi(float * A, float * b, int size, int itt) {
             float Bv, Av, Xv; 
             Bv = b[j]; 
             Av = A[j*size+j]; 
-            Xv = 0.0f; 
-            float *A = __builtin_assume_aligned(A, 16);
-            float *P = __builtin_assume_aligned(P, 16);
+            Xv = 0.0f;
+            #ifdef OPT
+            float *P = __builtin_assume_aligned(P, 32);
+            float *A = __builtin_assume_aligned(A, 32);
+            #endif
             for (int k = 0; k < j; k++) {
                 Xv += A[j*size+k]*P[k];
             }

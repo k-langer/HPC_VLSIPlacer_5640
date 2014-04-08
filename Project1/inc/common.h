@@ -10,6 +10,7 @@
 #include <math.h>
 #include <omp.h>
 #include <limits.h> 
+#include <malloc.h>
 #define PASS 0
 #define FAIL -1
 #define TRUE 1

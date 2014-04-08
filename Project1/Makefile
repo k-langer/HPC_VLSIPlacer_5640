@@ -1,5 +1,5 @@
 CC=gcc
-#OPT=-O3 -march=corei7 -mtune=corei7-avx
+OPT=-O3 -march=corei7 -mtune=corei7-avx  
 CFLAGS=-Wall -std=gnu99 -Wno-unused-result -lm  
 #DEBUG=-g -ggdb -pg
 CPARFLAGS=-fopenmp
