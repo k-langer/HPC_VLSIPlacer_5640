@@ -1,5 +1,7 @@
 #include "netlist.h"
 #include "common.h"
+#include "sort.h" 
+
 //TODO: Implement numeric solver to get future GPU speedup 
 /*
 * For each wire, fill all relevant gates
@@ -53,7 +55,7 @@ void solver_printMatrix(float * C_matrix,int size_gates) {
 * Fill the A matrix (from the connectivity matrix) 
 * also fill the bx and by matrix from the port locations
 */ 
-float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matrix, float * by_matrix, float * C_matrix, int size_gates) {
+float * solver_fillAMatrix(layout_t * layout, float * A_matrix, float * C_matrix, int size_gates) {
     float sum; 
     float elem; 
     for (int i = 0; i < size_gates; i++) {
@@ -67,8 +69,14 @@ float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matr
                 }
             }
         }
+        if (sum < 0.000001) {
+            sum = 0.000001; 
+        }
         A_matrix[i*size_gates + i] = sum; 
     }
+    return A_matrix;
+}
+float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matrix, float * by_matrix, int size_gates) {
     port_t * port; 
     int x; 
     int y; 
@@ -102,9 +110,6 @@ float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matr
 * accompanying Matlab text.
 */
 float * solver_jacobi(float * A, float * b, int size, int itt) {
-    float Bv; 
-    float Av; 
-    float Xv;
     float * P = calloc(sizeof(float),size); 
     float * X = calloc(sizeof(float),size);  
     if (!P || !X) {
@@ -114,21 +119,23 @@ float * solver_jacobi(float * A, float * b, int size, int itt) {
         P[i] = 0.0f;
         X[i] = 0.0f;
     }
-    float v; 
     float * swap; 
     for (int i = 0; i < itt; i++) {
+        //#pragma omp parallel for
         for (int j = 0; j < size; j++) {
+            float Bv, Av, Xv; 
             Bv = b[j]; 
             Av = A[j*size+j]; 
             Xv = 0.0f; 
-            for (int k = 0; k < size; k++) {
-                if (j != k) {
-                    v = A[j*size+k]*P[k];
-                    if (v < 0 || v > 0) {
-                        Xv+=v; 
-                    }
-                }
+            float *A = __builtin_assume_aligned(A, 16);
+            float *P = __builtin_assume_aligned(P, 16);
+            for (int k = 0; k < j; k++) {
+                Xv += A[j*size+k]*P[k];
             }
+            for (int k = j+1; k < size; k++) {
+                Xv += A[j*size+k]*P[k];
+            }
+             
             P[j] = (Bv - Xv)/Av; 
         }
         swap = P; 
@@ -138,31 +145,51 @@ float * solver_jacobi(float * A, float * b, int size, int itt) {
     free(P); 
     return X; 
 }
-void solver_assignGate(layout_t * layout, bool_t assigned, int depth, int ldepth, int x, int y, int *xr, int *yr) {
-    if (ldepth >= depth) {
-        if ((x >= 0 && x < layout->x_size) && (y >= 0 && y < layout->y_size)) {
-            if (!layout->grid[y*layout->x_size + x]) {
-                *yr = y; 
-                *xr = x; 
-                ldepth = depth; 
-                assigned = TRUE; 
-            } 
-        }
-        solver_assignGate(layout,assigned, depth+1, ldepth, x+1,y,xr,yr);
-        solver_assignGate(layout,assigned, depth+1, ldepth, x-1,y,xr,yr);
-        solver_assignGate(layout,assigned, depth+1, ldepth, x,y+1,xr,yr);
-        solver_assignGate(layout,assigned, depth+1, ldepth, x,y-1,xr,yr); 
+int solver_assignGate(layout_t * layout, int * xr, int * yr) {
+    int x = *xr; 
+    int y = *yr; 
+    int xsize = layout->x_size; 
+    int ysize = layout->y_size; 
+    gate_t ** grid = layout->grid;
+    if (grid[y*xsize + x] == 0) {
+        return 0; 
     }
+    int scale = 0; 
+    while (1) {
+        scale += 1;
+        for (int j = y-scale; j < y+scale; j++) {
+            for (int i = x-scale; i < x+scale; i++) {
+                //printf("x %d y %d xs %d xy %d\n",x,y,i,j); 
+                if (j >= 0 && j < ysize && i >= 0 && i < xsize && grid[j*xsize + i] == 0) {
+                    *xr = i;
+                    *yr = j;
+                    return 0;
+                }
+            }
+        }
+        if (scale > xsize || scale > ysize) {
+            break; 
+        }
+    }
+    printf("Could not do\n");
+    return -1;         
 }
 void solver_assignGates(layout_t * layout, float * x, float * y, int size) {
     printf("Assinging gates\n");
+    int xr, yr;
+    //char * visited = calloc(sizeof(char),layout->x_size*layout->y_size);
     for (int i = 0; i < size; i++) {
-        int xr,yr; 
-        solver_assignGate(layout,0,0,0,rint( x[i] ),rint( y[i] ),&xr,&yr);
-        printf("%d %d\n",xr,yr);
-        //(layout->all_gates+i)->x = rint( x[i] );
-        //(layout->all_gates+i)->y = rint( y[i] );
+        gate_t * gate = layout->all_gates+i; 
+        //solver_assignGate(layout,visited,i,0,INT_MAX,rint( x[i] ),rint( y[i] ),&xr,&yr);
+        xr = rint( x[i] ); 
+        yr = rint( y[i] );
+        solver_assignGate(layout, &xr, &yr);
+        layout->grid[yr*layout->x_size + xr] = gate;
+        gate->x = xr;
+        gate->y = yr;
     }
+}
+void solver_clearPlacement(layout_t * layout) {
 }
 /*
 * give a layout, preform a quadratic wirelength solve on it. 
@@ -176,14 +203,12 @@ void solver_quadraticWirelength(layout_t * layout) {
     float * bx_matrix = createMatrix(size_gates,1); 
     float * by_matrix = createMatrix(size_gates,1); 
     solver_fillCMatrix(layout,C_matrix,size_gates); 
-    solver_fillAbMatrix(layout,A_matrix,bx_matrix,by_matrix, C_matrix,size_gates); 
+    solver_fillAMatrix(layout,A_matrix,C_matrix,size_gates);
+    solver_fillAbMatrix(layout,A_matrix,bx_matrix,by_matrix,size_gates); 
     float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,30);
     float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,30);
     //solver_printAb(A_matrix, bx_matrix, by_matrix, size_gates);
     //solver_printMatrix(A_matrix,size_gates);
-    //for (int i = 0; i < size_gates; i++) {
-    //    printf("%f %f\n",resultx[i],resulty[i]);
-    //}
     solver_assignGates(layout,resultx,resulty,size_gates);
 }
 /*//DEPRECATED
@@ -202,6 +227,30 @@ void solver_printAb(float * A, float * bx, float * by, int size) {
             fprintf(fbx,"%f\n",bx[i]);
             fprintf(fby,"%f\n",by[i]);
         }
+    }
+}
+*/
+/*
+// Attempt at a roll-my-own A* search without a specfic goal
+// The idea is to search through all surrounding nodes and keep a
+// visited cache. Accepting the first empty space. 
+// Basically a complete failure
+void solver_assignGate(layout_t * layout, char * visited, int gate, int depth, int ldepth, int x, int y, int *xr, int *yr) {
+    int place = y*layout->x_size + x; 
+    if ( ldepth > depth 
+        && (x >= 0 && x < layout->x_size) 
+        && (y >= 0 && y < layout->y_size) 
+        && visited[place] != gate+1) {
+            visited[place] = gate+1; 
+            if (!layout->grid[place]) {
+                *yr = y; 
+                *xr = x; 
+                ldepth = depth; 
+            } 
+            solver_assignGate(layout,visited, gate, depth+1, ldepth, x+1,y,xr,yr);
+            solver_assignGate(layout,visited, gate, depth+1, ldepth, x,y+1,xr,yr);
+            solver_assignGate(layout,visited, gate, depth+1, ldepth, x-1,y,xr,yr);
+            //solver_assignGate(layout,visited, gate, depth+1, ldepth, x,y-1,xr,yr); 
     }
 }
 */

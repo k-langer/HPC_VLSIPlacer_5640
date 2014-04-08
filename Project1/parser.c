@@ -111,7 +111,8 @@ layout_t* parser_addGate(layout_t *layout, char ** init) {
     int i = 1; 
     int fanin_size = 0; 
     wire_n * fanin_bfr = malloc(sizeof(wire_n)*20);
-    gate_t * self_ptr = &(layout->all_gates[layout->size_gates]); 
+    gate_t * self_ptr = &(layout->all_gates[layout->size_gates]);
+    self_ptr->RP = TRUE; 
     while (init[i]) { 
         if (strstr(init[i],"name=")) {
             int t_len = strlen("name="); 
@@ -161,7 +162,7 @@ void parser_linkPort(layout_t *layout, wire_n wiren, port_n portn) {
 layout_t* parser_addPort(layout_t *layout, char ** init) {
     int i = 1; 
     port_t * self_ptr = &(layout->all_ports[layout->size_ports]); 
-    self_ptr->weight = 10.0f;
+    self_ptr->weight = (float) PORT_WEIGHT;
     while (init[i]) { 
         if (strstr(init[i],"name=")) {
             int t_len = strlen("name="); 

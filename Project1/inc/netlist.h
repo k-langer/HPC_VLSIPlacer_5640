@@ -3,6 +3,8 @@
 typedef int wire_n; 
 typedef int gate_n;
 typedef int port_n; 
+typedef unsigned char bool;
+
 /* Super Special Note, for all structures the largest bitwidth items
 * are placed at the top of the structure. This was to maximize packing
 * and minimize D$ problems. So that is why everything is in wony orders
@@ -47,6 +49,9 @@ typedef struct gate {
     int fanin_size; 
     int x; 
     int y;
+    float xqp; 
+    float yqp; 
+    bool RP; 
 } gate_t; 
 /*
 * Wire:
@@ -92,11 +97,12 @@ typedef struct coord {
     int x; 
     int y; 
 } coord_t;
-
+void netlist_verifyResults(layout_t *);
 int netlist_wireWirelength(layout_t *, wire_n);
 int netlist_layoutWirelength(layout_t *); 
 void netlist_printNetlist(layout_t*); 
-int netlist_wireRevertWirelength(layout_t *, wire_n);
+//int netlist_wireRevertWirelength(layout_t *, swapList_t * );
+int netlist_wireRevertWirelength(layout_t * layout, wire_n wiren);
 void netlist_printQoR(layout_t *); 
 void netlist_free(layout_t *); 
 void netlist_printForVisualizer(layout_t *); 
