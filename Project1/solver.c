@@ -38,10 +38,15 @@ void solver_fillCMatrix(layout_t * layout, float *  C_matrix,int size, int row) 
 * return a row/col matrix full of all zeros
 */
 float * createMatrix(int ysize, int xsize) {
+    float * ret; 
     #ifdef OPT
-    return (float *) memalign(16,sizeof(float)*ysize*xsize);
+    ret = (float *) memalign(16,sizeof(float)*ysize*xsize);
     #endif
-    return (float *) calloc(sizeof(float),ysize*xsize);
+    ret = (float *) calloc(sizeof(float),ysize*xsize);
+    if (!ret) {
+        printf("OUT OF MEMORY ERROR\n");
+    }
+    return ret;
 }
 /*
 * just print any square matrix to the console
@@ -115,9 +120,6 @@ float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matr
 float * solver_jacobi(float * A, float * b, int size, int row, int itt) {
     float * P = createMatrix(size,1);
     float * X = createMatrix(size,1);
-    if (!P || !X) {
-        printf("OUT OF MEMORY ERROR (jacobi)\n");
-    } 
     for (int i = 0; i < size; i++) {
         P[i] = 0.0f;
         X[i] = 0.0f;
