@@ -140,9 +140,10 @@ float * solver_jacobi(float * A, float * b, int size, int itt) {
             for (int k = j+1; k < size; k++) {
                 Xv += A[j*size+k]*P[k];
             }
-             
             P[j] = (Bv - Xv)/Av; 
+            printf("%f %f\n",b[j], P[j]);
         }
+        printf("%d\n",i);
         swap = P; 
         P = X; 
         X = swap; 
@@ -196,6 +197,23 @@ void solver_assignGates(layout_t * layout, float * x, float * y, int size) {
 }
 void solver_clearPlacement(layout_t * layout) {
 }
+//was being used to print matrix for use in MATLAB testing
+//before I had implemented jacobi. Good stuff, 1+Gig text files. 
+void solver_printAb(float * A, float * bx, float * by, int size) {
+    FILE *fA = fopen("matrix/A.txt", "w+");
+    FILE *fbx = fopen("matrix/bx.txt","w+");
+    FILE *fby = fopen("matrix/by.txt","w+"); 
+    for (int i = 0; i < size*size; i++) {
+        if (i %size == 0) {
+            fprintf(fA,"\n");
+        } 
+        fprintf(fA,"%f ",A[i]);
+        if (i < size) {
+            fprintf(fbx,"%f\n",bx[i]);
+            fprintf(fby,"%f\n",by[i]);
+        }
+    }
+}
 /*
 * give a layout, preform a quadratic wirelength solve on it. 
 * turns out it is way faster than simulated annealing
@@ -210,33 +228,19 @@ void solver_quadraticWirelength(layout_t * layout) {
     solver_fillCMatrix(layout,C_matrix,size_gates); 
     solver_fillAMatrix(layout,A_matrix,C_matrix,size_gates);
     solver_fillAbMatrix(layout,A_matrix,bx_matrix,by_matrix,size_gates); 
-    float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,30);
-    float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,30);
-    //float * resultx = jacobi_jacobi(A_matrix,bx_matrix,size_gates,30);
-    //float * resulty = jacobi_jacobi(A_matrix,by_matrix,size_gates,30);
     //solver_printAb(A_matrix, bx_matrix, by_matrix, size_gates);
+    //float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,30);
+    //float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,30);
+    float * resultx = jacobi_jacobi(A_matrix,bx_matrix,size_gates,30);
+    float * resulty = jacobi_jacobi(A_matrix,by_matrix,size_gates,30);
+    for (int i = 0; i < size_gates; i++) {
+        printf("%f %f\n",resultx[i],resulty[i]);
+    }
     //solver_printMatrix(A_matrix,size_gates);
     solver_assignGates(layout,resultx,resulty,size_gates);
 }
-/*//DEPRECATED
-//was being used to print matrix for use in MATLAB testing
-//before I had implemented jacobi. Good stuff, 1+Gig text files. 
-void solver_printAb(float * A, float * bx, float * by, int size) {
-    FILE *fA = fopen("/media/kevin/UUI/matrix/A.txt", "w+");
-    FILE *fbx = fopen("/media/kevin/UUI/matrix/bx.txt","w+");
-    FILE *fby = fopen("/media/kevin/UUI/matrix/by.txt","w+"); 
-    for (int i = 0; i < size*size; i++) {
-        if (i %size == 0) {
-            fprintf(fA,"\n");
-        } 
-        fprintf(fA,"%f ",A[i]);
-        if (i < size) {
-            fprintf(fbx,"%f\n",bx[i]);
-            fprintf(fby,"%f\n",by[i]);
-        }
-    }
-}
-*/
+
+
 /*
 // Attempt at a roll-my-own A* search without a specfic goal
 // The idea is to search through all surrounding nodes and keep a
