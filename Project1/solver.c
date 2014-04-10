@@ -6,7 +6,7 @@
 /*
 * For each wire, fill all relevant gates
 */ 
-void solver_combinatoricsWire(wire_t * wire, float * C_matrix, int size) {
+void solver_combinatoricsWire(wire_t * wire, float * C_matrix, int size,int row) {
     int wc = wire->num_gates; 
     if( wc < 2 ) {
        return;  
@@ -19,8 +19,8 @@ void solver_combinatoricsWire(wire_t * wire, float * C_matrix, int size) {
             if (i != j) {
                 y = wire->gates[j]; 
                 //printf("%d %d %f\n",x,y,weight);
-                C_matrix[y*size + x] += weight;
-                C_matrix[x*size + y] += weight;  
+                C_matrix[y*row + x] += weight;
+                C_matrix[x*row + y] += weight;  
             }
         }
     }
@@ -28,10 +28,10 @@ void solver_combinatoricsWire(wire_t * wire, float * C_matrix, int size) {
 /*
 * Create the connectivity matrix. 
 */
-void solver_fillCMatrix(layout_t * layout, float *  C_matrix,int size) {
+void solver_fillCMatrix(layout_t * layout, float *  C_matrix,int size, int row) {
    for (int wireCount = 0; wireCount < layout->size_wires; wireCount++) {
        wire_t * wire = layout->all_wires + wireCount; 
-       solver_combinatoricsWire(wire,C_matrix,size);
+       solver_combinatoricsWire(wire,C_matrix,size,row);
     } 
 }
 /* 
@@ -58,28 +58,28 @@ void solver_printMatrix(float * C_matrix,int size_gates) {
 * Fill the A matrix (from the connectivity matrix) 
 * also fill the bx and by matrix from the port locations
 */ 
-float * solver_fillAMatrix(layout_t * layout, float * A_matrix, float * C_matrix, int size_gates) {
+float * solver_fillAMatrix(layout_t * layout, float * A_matrix, float * C_matrix, int size_gates,int row) {
     float sum; 
     float elem; 
     for (int i = 0; i < size_gates; i++) {
         sum = 0; 
         for (int j = 0; j < size_gates; j++) {
             if (i != j) {
-                elem = C_matrix[i*size_gates + j];
+                elem = C_matrix[i*row + j];
                 sum += elem; 
                 if (-1*elem < 0) {
-                    A_matrix[i*size_gates + j] = -1*elem;
+                    A_matrix[i*row + j] = -1*elem;
                 }
             }
         }
         if (sum < 0.000001) {
             sum = 0.000001; 
         }
-        A_matrix[i*size_gates + i] = sum; 
+        A_matrix[i*row + i] = sum; 
     }
     return A_matrix;
 }
-float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matrix, float * by_matrix, int size_gates) {
+float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matrix, float * by_matrix, int size_gates, int row) {
     port_t * port; 
     int x; 
     int y; 
@@ -94,7 +94,7 @@ float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matr
         weight = port->weight; 
         for (int j = 0; j < wire->num_gates; j++) {
             gate = wire->gates[j];
-            A_matrix[gate*size_gates + gate] += weight; 
+            A_matrix[gate*row + gate] += weight; 
             bx_matrix[gate] += weight*x;
             by_matrix[gate] += weight*y;
         }
@@ -112,7 +112,7 @@ float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matr
 * Code is based on algorithm in 'NUMERICAL METHODS for Mathematics, Science and Engineering, 2nd Ed, 1992' and the
 * accompanying Matlab text.
 */
-float * solver_jacobi(float * A, float * b, int size, int itt) {
+float * solver_jacobi(float * A, float * b, int size, int row, int itt) {
     float * P = createMatrix(size,1);
     float * X = createMatrix(size,1);
     if (!P || !X) {
@@ -128,17 +128,17 @@ float * solver_jacobi(float * A, float * b, int size, int itt) {
         for (int j = 0; j < size; j++) {
             float Bv, Av, Xv; 
             Bv = b[j]; 
-            Av = A[j*size+j]; 
+            Av = A[j*row+j]; 
             Xv = 0.0f;
             #ifdef OPT
             float *P = __builtin_assume_aligned(P, 32);
             float *A = __builtin_assume_aligned(A, 32);
             #endif
             for (int k = 0; k < j; k++) {
-                Xv += A[j*size+k]*P[k];
+                Xv += A[j*row+k]*P[k];
             }
             for (int k = j+1; k < size; k++) {
-                Xv += A[j*size+k]*P[k];
+                Xv += A[j*row+k]*P[k];
             }
              
             P[j] = (Bv - Xv)/Av; 
@@ -202,19 +202,31 @@ void solver_clearPlacement(layout_t * layout) {
 * Legalize cells, but do not provide any optimization on legalized cells 
 */
 void solver_quadraticWirelength(layout_t * layout) {
-    int size_gates = layout->size_gates; 
-    float * C_matrix = createMatrix(size_gates,size_gates); 
-    float * A_matrix = createMatrix(size_gates,size_gates); 
-    float * bx_matrix = createMatrix(size_gates,1); 
-    float * by_matrix = createMatrix(size_gates,1); 
-    solver_fillCMatrix(layout,C_matrix,size_gates); 
-    solver_fillAMatrix(layout,A_matrix,C_matrix,size_gates);
-    solver_fillAbMatrix(layout,A_matrix,bx_matrix,by_matrix,size_gates); 
-    float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,30);
-    float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,30);
+    int size_gates = layout->size_gates;
+    int row_size = size_gates; 
+    #ifdef OPT
+    int row_size = (size_gates+7) & ~7UL; 
+    #endif
+    float * C_matrix = createMatrix(row_size,row_size); 
+    float * A_matrix = createMatrix(row_size,row_size); 
+    float * bx_matrix = createMatrix(row_size,1); 
+    float * by_matrix = createMatrix(row_size,1); 
+    solver_fillCMatrix(layout,C_matrix,size_gates,row_size); 
+    solver_fillAMatrix(layout,A_matrix,C_matrix,size_gates,row_size);
+    solver_fillAbMatrix(layout,A_matrix,bx_matrix,by_matrix,size_gates,row_size); 
+    float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,row_size,30);
+    float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,row_size,30);
     //solver_printAb(A_matrix, bx_matrix, by_matrix, size_gates);
     //solver_printMatrix(A_matrix,size_gates);
-    solver_assignGates(layout,resultx,resulty,size_gates);
+    int xr,yr;
+    for (int i = 0; i < size_gates; i++ ) {
+        gate_t * gate = layout->all_gates+i; 
+        xr = rint( resultx[i] ); 
+        yr = rint( resulty[i] );
+        gate->x = xr;
+        gate->y = yr;
+    }
+//    solver_assignGates(layout,resultx,resulty,size_gates);
 }
 /*//DEPRECATED
 //was being used to print matrix for use in MATLAB testing
