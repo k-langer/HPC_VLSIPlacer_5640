@@ -229,10 +229,13 @@ void solver_quadraticWirelength(layout_t * layout) {
     solver_fillAMatrix(layout,A_matrix,C_matrix,size_gates);
     solver_fillAbMatrix(layout,A_matrix,bx_matrix,by_matrix,size_gates); 
     //solver_printAb(A_matrix, bx_matrix, by_matrix, size_gates);
-    //float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,30);
-    //float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,30);
+    #ifndef CUDA 
+    float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,30);
+    float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,30);
+    #else
     float * resultx = jacobi_jacobi(A_matrix,bx_matrix,size_gates,30);
     float * resulty = jacobi_jacobi(A_matrix,by_matrix,size_gates,30);
+    #endif
     for (int i = 0; i < size_gates; i++) {
         printf("%f %f\n",resultx[i],resulty[i]);
     }

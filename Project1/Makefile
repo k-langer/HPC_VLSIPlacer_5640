@@ -10,7 +10,9 @@ CFLAGS=-Wall -std=gnu99 -Wno-unused-result -lm
 #ANNEALER=-D NO_ANNEALER
 CUARCH = -arch=sm_20
 PRODUCTION=-D PRODUCTION
+#CUDA =-D CUDA
 TARGET=placer
+TARGETCU=placer_cu
 INC=-Iinc/
 L=-L /usr/local/cuda/lib64/ -lcudart
 OBJS = parser.o \
@@ -19,20 +21,21 @@ OBJS = parser.o \
 	   rand.o \
 	   annealer.o \
 	   sort.o \
-	   jacobi.o \
-	   solver_cu.o \
 	   main.o 
+CUOBJS = jacobi.o \
+		 solver_cu.o \
+	     solver.o
 
 all: $(TARGET)
-    
+cuda: $(TARGETCU)    
 %.o: %.c
-	$(CC) $(INC) $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) -c $<
+	$(CC) $(INC) $(CUDA) $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) -c $<
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $(L) $^ $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) 
+	$(CC) -o $@ $^ $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) 
 
-#$(TARGET): $(OBJS)
-#	$(NVCC) -o $@ $^ $(ANNEALER) -lm $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) 
+$(TARGETCU): $(OBJS) $(CUOBJS)
+	$(CC) -o $@ $(L) $^ $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) 
 
 solver_cu.o : jacobi.o solver.o
 	$(NVCC) $(INC) $(CUARCH) -dlink jacobi.o solver.o -o solver_cu.o
