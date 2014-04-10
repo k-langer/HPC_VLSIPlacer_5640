@@ -31,9 +31,9 @@ int main(int argc, char**argv) {
     int msec = diff * 1000 / CLOCKS_PER_SEC;
     printf("Sequential time: %d s %d ms\n", msec/1000, msec%1000);
     netlist_printForMatlab(layout);
-    netlist_free(layout);
     printf("done\n");
     */
+    netlist_free(layout);
     return 0;
 }
 

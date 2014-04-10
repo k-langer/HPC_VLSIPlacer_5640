@@ -1,7 +1,7 @@
 #include "netlist.h"
 #include "common.h"
 #include "sort.h" 
-
+#include "jacobi.h"  
 //TODO: Implement numeric solver to get future GPU speedup 
 /*
 * For each wire, fill all relevant gates
@@ -41,7 +41,7 @@ float * createMatrix(int ysize, int xsize) {
     #ifdef OPT
     return (float *) memalign(16,sizeof(float)*ysize*xsize);
     #endif
-    return calloc(sizeof(float),ysize*xsize);
+    return (float *) calloc(sizeof(float),ysize*xsize);
 }
 /*
 * just print any square matrix to the console
@@ -140,7 +140,6 @@ float * solver_jacobi(float * A, float * b, int size, int row, int itt) {
             for (int k = j+1; k < size; k++) {
                 Xv += A[j*row+k]*P[k];
             }
-             
             P[j] = (Bv - Xv)/Av; 
         }
         swap = P; 
@@ -196,6 +195,23 @@ void solver_assignGates(layout_t * layout, float * x, float * y, int size) {
 }
 void solver_clearPlacement(layout_t * layout) {
 }
+//was being used to print matrix for use in MATLAB testing
+//before I had implemented jacobi. Good stuff, 1+Gig text files. 
+void solver_printAb(float * A, float * bx, float * by, int size) {
+    FILE *fA = fopen("matrix/A.txt", "w+");
+    FILE *fbx = fopen("matrix/bx.txt","w+");
+    FILE *fby = fopen("matrix/by.txt","w+"); 
+    for (int i = 0; i < size*size; i++) {
+        if (i %size == 0) {
+            fprintf(fA,"\n");
+        } 
+        fprintf(fA,"%f ",A[i]);
+        if (i < size) {
+            fprintf(fbx,"%f\n",bx[i]);
+            fprintf(fby,"%f\n",by[i]);
+        }
+    }
+}
 /*
 * give a layout, preform a quadratic wirelength solve on it. 
 * turns out it is way faster than simulated annealing
@@ -228,25 +244,8 @@ void solver_quadraticWirelength(layout_t * layout) {
     }
 //    solver_assignGates(layout,resultx,resulty,size_gates);
 }
-/*//DEPRECATED
-//was being used to print matrix for use in MATLAB testing
-//before I had implemented jacobi. Good stuff, 1+Gig text files. 
-void solver_printAb(float * A, float * bx, float * by, int size) {
-    FILE *fA = fopen("/media/kevin/UUI/matrix/A.txt", "w+");
-    FILE *fbx = fopen("/media/kevin/UUI/matrix/bx.txt","w+");
-    FILE *fby = fopen("/media/kevin/UUI/matrix/by.txt","w+"); 
-    for (int i = 0; i < size*size; i++) {
-        if (i %size == 0) {
-            fprintf(fA,"\n");
-        } 
-        fprintf(fA,"%f ",A[i]);
-        if (i < size) {
-            fprintf(fbx,"%f\n",bx[i]);
-            fprintf(fby,"%f\n",by[i]);
-        }
-    }
-}
-*/
+
+
 /*
 // Attempt at a roll-my-own A* search without a specfic goal
 // The idea is to search through all surrounding nodes and keep a
