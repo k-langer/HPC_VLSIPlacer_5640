@@ -134,16 +134,12 @@ float * solver_jacobi(float * A, float * b, int size, int itt) {
             float *P = __builtin_assume_aligned(P, 32);
             float *A = __builtin_assume_aligned(A, 32);
             #endif
-            for (int k = 0; k < j; k++) {
+            for (int k = 0; k < size; k++) {
                 Xv += A[j*size+k]*P[k];
             }
-            for (int k = j+1; k < size; k++) {
-                Xv += A[j*size+k]*P[k];
-            }
+            Xv -= Av*P[j];
             P[j] = (Bv - Xv)/Av; 
-            printf("%f %f\n",b[j], P[j]);
         }
-        printf("%d\n",i);
         swap = P; 
         P = X; 
         X = swap; 
@@ -237,10 +233,13 @@ void solver_quadraticWirelength(layout_t * layout) {
     float * resulty = jacobi_jacobi(A_matrix,by_matrix,size_gates,30);
     #endif
     for (int i = 0; i < size_gates; i++) {
-        printf("%f %f\n",resultx[i],resulty[i]);
+        //printf("%f %f\n",resultx[i],resulty[i]);
+        layout->all_gates[i].x = rint( resultx[i] ); 
+        layout->all_gates[i].y = rint( resulty[i] );
     }
     //solver_printMatrix(A_matrix,size_gates);
-    solver_assignGates(layout,resultx,resulty,size_gates);
+    printf("Done\n");
+    //solver_assignGates(layout,resultx,resulty,size_gates);
 }
 
 
