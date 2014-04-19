@@ -4,7 +4,7 @@ NVCC=nvcc
 #OPT=-O3
 #CFLAGS = -lm
 CFLAGS=-Wall -std=gnu99 -Wno-unused-result -lm  
-#DEBUG=-g -ggdb -pg
+DEBUG=-g -ggdb -pg
 #CPARFLAGS=-fopenmp
 #RDRAND=-D IVYHASWELL
 #ANNEALER=-D NO_ANNEALER
