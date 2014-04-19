@@ -40,17 +40,18 @@ extern "C" {
 
 __global__ void jacobi_jacobicu(float * A, float * b, float * P, int size) {
     int j = blockIdx.x * blockDim.x + threadIdx.x;
-    int i = blockIdx.y * blockDim.y + threadIdx.y;
-    float Bv, Av, Xv = 0.0f; 
+    if (j < size) {
+    printf("%d\n",j);
+    float Bv, Av, Xv; 
     Bv = b[j]; 
-    for (int k = 0; k < j; k++) {
-        Xv += A[j*size+k]*P[k];
-    }
     Av = A[j*size+j]; 
-    for (int k = j+1; k < size; k++) {
+    Xv = 0.0f;
+    for (int k = 0; k < size; k++) {
         Xv += A[j*size+k]*P[k];
     }
-    P[j] = (Bv - Xv)/Av; 
+    Xv -= Av*P[j];
+    P[j] = (Bv - Xv)/Av;
+    } 
 }
 
 /*
@@ -77,29 +78,28 @@ float * jacobi_createMatrix(int ysize, int xsize) {
     return (float *) calloc(sizeof(float),ysize*xsize);
 }
 extern "C" float * jacobi_jacobi(float * A, float * b, int size, int itt) {
-    float * P_d, * X_d, * A_d, * b_d, * t_d; 
-    cudaMalloc((void **) &A_d, size*size*sizeof(float))+16; 
-    cudaMalloc((void **) &b_d, size*sizeof(float)+16); 
-    cudaMalloc((void **) &P_d, size*sizeof(float)+16); 
-    cudaMalloc((void **) &X_d, size*sizeof(float)+16); 
-    cudaMalloc((void **) &t_d, size*sizeof(float)+16); 
+    float * P_d, * X_d, * A_d, * b_d;
+    cudaMalloc((void **) &A_d, size*size*sizeof(float)); 
+    cudaMalloc((void **) &b_d, size*sizeof(float)); 
+    cudaMalloc((void **) &P_d, size*sizeof(float)); 
+    cudaMalloc((void **) &X_d, size*sizeof(float)); 
     float * X = jacobi_createMatrix(size,1);
     float * swap;
     cudaMemcpy(A_d, A, size*size*sizeof(float), cudaMemcpyHostToDevice); 
     cudaMemcpy(b_d, b, size*sizeof(float), cudaMemcpyHostToDevice); 
     cudaMemcpy(P_d, X, size*sizeof(float), cudaMemcpyHostToDevice); 
     cudaMemcpy(X_d, X, size*sizeof(float), cudaMemcpyHostToDevice); 
-    int blockX = 16, blockY = 16; 
-    dim3 blocks(blockX, blockY); 
-    dim3 grid(size/blocks.x +1, 1); 
     for (int i = 0; i < itt; i++) {
-        jacobi_jacobicu<<<blocks,grid>>>(A_d, b_d, P_d, size); 
+        jacobi_jacobicu<<<size/16 + 1,16>>>(A_d, b_d, P_d, size); 
         swap = P_d; 
         P_d = X_d; 
         X_d = swap;
-        //cudaMemcpy(t_d, b, size*sizeof(float), cudaMemcpyHostToDevice); 
     }
     cudaMemcpy(X, X_d, size*sizeof(float), cudaMemcpyDeviceToHost);
+    cudaFree(A_d); 
+    cudaFree(b_d); 
+    cudaFree(P_d); 
+    cudaFree(X_d);
     return X; 
 }
 /*
