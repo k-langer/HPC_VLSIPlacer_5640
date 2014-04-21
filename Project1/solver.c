@@ -6,7 +6,7 @@
 /*
 * For each wire, fill all relevant gates
 */ 
-void solver_combinatoricsWire(wire_t * wire, float * C_matrix, int size,int row) {
+void solver_combinatoricsWire(wire_t * wire, float * C_matrix, unsigned int size,unsigned int row) {
     int wc = wire->num_gates; 
     if( wc < 2 ) {
        return;  
@@ -28,7 +28,7 @@ void solver_combinatoricsWire(wire_t * wire, float * C_matrix, int size,int row)
 /*
 * Create the connectivity matrix. 
 */
-void solver_fillCMatrix(layout_t * layout, float *  C_matrix,int size, int row) {
+void solver_fillCMatrix(layout_t * layout, float *  C_matrix,unsigned int size, unsigned int row) {
    for (int wireCount = 0; wireCount < layout->size_wires; wireCount++) {
        wire_t * wire = layout->all_wires + wireCount; 
        solver_combinatoricsWire(wire,C_matrix,size,row);
@@ -37,7 +37,7 @@ void solver_fillCMatrix(layout_t * layout, float *  C_matrix,int size, int row) 
 /* 
 * return a row/col matrix full of all zeros
 */
-float * createMatrix(int ysize, int xsize) {
+float * createMatrix(unsigned int ysize, unsigned int xsize) {
     float * ret; 
     #ifdef OPT
     ret = (float *) memalign(16,sizeof(float)*ysize*xsize);
@@ -51,9 +51,9 @@ float * createMatrix(int ysize, int xsize) {
 /*
 * just print any square matrix to the console
 */
-void solver_printMatrix(float * C_matrix,int size_gates) {
-    for (int i = 0; i < size_gates; i++) {
-        for (int j = 0; j < size_gates; j++) {
+void solver_printMatrix(float * C_matrix,unsigned int size_gates) {
+    for (unsigned int i = 0; i < size_gates; i++) {
+        for (unsigned int j = 0; j < size_gates; j++) {
             printf("%f ",C_matrix[i*size_gates + j]);
         }
         printf("\n"); 
@@ -63,12 +63,12 @@ void solver_printMatrix(float * C_matrix,int size_gates) {
 * Fill the A matrix (from the connectivity matrix) 
 * also fill the bx and by matrix from the port locations
 */ 
-float * solver_fillAMatrix(layout_t * layout, float * A_matrix, float * C_matrix, int size_gates,int row) {
+float * solver_fillAMatrix(layout_t * layout, float * A_matrix, float * C_matrix, unsigned int size_gates,unsigned int row) {
     float sum; 
     float elem; 
-    for (int i = 0; i < size_gates; i++) {
+    for (size_t i = 0; i < size_gates; i++) {
         sum = 0; 
-        for (int j = 0; j < size_gates; j++) {
+        for (size_t j = 0; j < size_gates; j++) {
             if (i != j) {
                 elem = C_matrix[i*row + j];
                 sum += elem; 
@@ -84,20 +84,20 @@ float * solver_fillAMatrix(layout_t * layout, float * A_matrix, float * C_matrix
     }
     return A_matrix;
 }
-float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matrix, float * by_matrix, int size_gates, int row) {
+float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matrix, float * by_matrix, unsigned int size_gates, unsigned int row) {
     port_t * port; 
     int x; 
     int y; 
     wire_t * wire; 
     gate_n gate;
     float weight;  
-    for (int i = 0; i < layout->size_ports; i++) {
+    for (size_t i = 0; i < layout->size_ports; i++) {
         port = layout->all_ports + i; 
         x = port->x; 
         y = port->y;
         wire = layout->all_wires + port->wire;
         weight = port->weight; 
-        for (int j = 0; j < wire->num_gates; j++) {
+        for (size_t j = 0; j < wire->num_gates; j++) {
             gate = wire->gates[j];
             A_matrix[gate*row + gate] += weight; 
             bx_matrix[gate] += weight*x;
@@ -117,7 +117,7 @@ float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matr
 * Code is based on algorithm in 'NUMERICAL METHODS for Mathematics, Science and Engineering, 2nd Ed, 1992' and the
 * accompanying Matlab text.
 */
-float * solver_jacobi(float * restrict A, float * restrict b, int size, int row, int itt) {
+float * solver_jacobi(float * restrict A, float * restrict b, unsigned int size, unsigned int row, unsigned int itt) {
     float * P = createMatrix(size,1);
     float * X = createMatrix(size,1);
     for (int i = 0; i < size; i++) {
@@ -179,7 +179,7 @@ int solver_assignGate(layout_t * layout, int * xr, int * yr) {
     printf("Could not do\n");
     return -1;         
 }
-void solver_assignGates(layout_t * layout, float * x, float * y, int size) {
+void solver_assignGates(layout_t * layout, float * x, float * y, unsigned int size) {
     printf("Assinging gates\n");
     int xr, yr;
     //char * visited = calloc(sizeof(char),layout->x_size*layout->y_size);
@@ -198,7 +198,7 @@ void solver_clearPlacement(layout_t * layout) {
 }
 //was being used to print matrix for use in MATLAB testing
 //before I had implemented jacobi. Good stuff, 1+Gig text files. 
-void solver_printAb(float * A, float * bx, float * by, int size) {
+void solver_printAb(float * A, float * bx, float * by, unsigned int size) {
     FILE *fA = fopen("matrix/A.txt", "w+");
     FILE *fbx = fopen("matrix/bx.txt","w+");
     FILE *fby = fopen("matrix/by.txt","w+"); 
