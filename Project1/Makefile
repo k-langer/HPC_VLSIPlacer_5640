@@ -5,12 +5,11 @@ NVCC=nvcc
 #CFLAGS = -lm
 CFLAGS=-Wall -std=gnu99 -Wno-unused-result -lm  
 DEBUG=-g -ggdb -pg
-#CPARFLAGS=-fopenmp
+CPARFLAGS=-fopenmp
 #RDRAND=-D IVYHASWELL
 #ANNEALER=-D NO_ANNEALER
 CUARCH = -arch=sm_20
-PRODUCTION=-D PRODUCTION
-#CUDA =-D CUDA
+PRODUCTION=
 TARGET=placer
 TARGETCU=placer_cu
 INC=-Iinc/
@@ -37,7 +36,8 @@ $(TARGET): $(OBJS)
 $(TARGETCU): $(OBJS) $(CUOBJS)
 	$(CC) -o $@ $(L) $^ $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) 
 
-solver_cu.o : jacobi.o solver.o
+solver_cu.o : jacobi.o solver.c
+	$(CC) $(INC) -D CUDA $(OPT) $(CFLAGS) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) -c solver.c
 	$(NVCC) $(INC) $(CUARCH) -dlink jacobi.o solver.o -o solver_cu.o
 %.o: %.cu
 	$(NVCC) $(INC) $(CUARCH) -dc  $<

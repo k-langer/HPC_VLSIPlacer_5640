@@ -10,29 +10,39 @@ int main(int argc, char**argv) {
     if (!layout) {
         return -1;
     }
-    /*    
+    int threads = 1; 
+    if (argc > 2) {
+        printf("HERE\n");
+        #ifdef PRODUCTION
+        printf("Threads %d\n",atoi(argv[2])); 
+        #endif
+        threads = atoi(argv[2]);
+    }
+    int sum = 0;
+    #ifdef ANNEALER
+    int sum1 = 0;    
     rand_init(); 
     annealer_createInitialPlacement(layout);
-    int sum1 = netlist_layoutWirelength(layout);
-    clock_t start = clock(), diff;
-    annealer_anneal(layout,sum1);
-    diff = clock() - start;
-    int sum = netlist_layoutWirelength(layout);
+    sum1 = netlist_layoutWirelength(layout);
+    annealer_anneal(layout,sum1,threads);
+    sum = netlist_layoutWirelength(layout);
     printf("Wirelength: %d %d\n",sum,sum1);
-    */
+    #else 
     solver_quadraticWirelength(layout);
-    int sum = netlist_layoutWirelength(layout);
+    #endif 
+    sum = netlist_layoutWirelength(layout);
     printf("Wirelength: %d\n",sum);
+
+    #ifdef PRODUCTION 
     netlist_printNetlist(layout); 
-    
-    //netlist_printNetlist(layout); 
-    //netlist_printQoR(layout);
-    /*
-    int msec = diff * 1000 / CLOCKS_PER_SEC;
-    printf("Sequential time: %d s %d ms\n", msec/1000, msec%1000);
-    netlist_printForMatlab(layout);
+    netlist_printNetlist(layout); 
+    netlist_printQoR(layout);
+    //netlist_printForMatlab(layout);
     printf("done\n");
-    */
+    #endif 
+    #ifdef BENCHMARK 
+    printf("Wirelength: %d\n",sum);
+    #endif
     netlist_free(layout);
     return 0;
 }

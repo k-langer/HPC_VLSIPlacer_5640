@@ -117,7 +117,7 @@ float * solver_fillAbMatrix(layout_t * layout, float * A_matrix, float * bx_matr
 * Code is based on algorithm in 'NUMERICAL METHODS for Mathematics, Science and Engineering, 2nd Ed, 1992' and the
 * accompanying Matlab text.
 */
-float * solver_jacobi(float * A, float * b, int size, int row, int itt) {
+float * solver_jacobi(float * restrict A, float * restrict b, int size, int row, int itt) {
     float * P = createMatrix(size,1);
     float * X = createMatrix(size,1);
     for (int i = 0; i < size; i++) {
@@ -125,9 +125,10 @@ float * solver_jacobi(float * A, float * b, int size, int row, int itt) {
         X[i] = 0.0f;
     }
     float * swap; 
-    for (int i = 0; i < itt; i++) {
-        //#pragma omp parallel for
-        for (int j = 0; j < size; j++) {
+    size_t i, j;
+    for (i = 0; i < itt; i++) {
+        //#pragma omp parallel for private(j)
+        for (j = 0; j < size; j++) {
             float Bv, Av, Xv; 
             Bv = b[j]; 
             Av = A[j*row+j]; 
@@ -230,8 +231,16 @@ void solver_quadraticWirelength(layout_t * layout) {
     solver_fillCMatrix(layout,C_matrix,size_gates,row_size); 
     solver_fillAMatrix(layout,A_matrix,C_matrix,size_gates,row_size);
     solver_fillAbMatrix(layout,A_matrix,bx_matrix,by_matrix,size_gates,row_size); 
+    #ifndef CUDA
     float * resultx = solver_jacobi(A_matrix,bx_matrix,size_gates,row_size,30);
     float * resulty = solver_jacobi(A_matrix,by_matrix,size_gates,row_size,30);
+    #else 
+    float * resultx =  createMatrix(1,size_gates);
+    float * resulty =  createMatrix(1,size_gates);
+    jacobi_jacobi2(resultx,resulty,A_matrix,bx_matrix,by_matrix,size_gates,30);
+    //float * resultx = jacobi_jacobi(A_matrix,bx_matrix,size_gates,30);
+    //float * resulty = jacobi_jacobi(A_matrix,by_matrix,size_gates,30);
+    #endif
     //solver_printAb(A_matrix, bx_matrix, by_matrix, size_gates);
     //solver_printMatrix(A_matrix,size_gates);
     int xr,yr;
