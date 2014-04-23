@@ -127,7 +127,7 @@ float * solver_jacobi(float * restrict A, float * restrict b, unsigned int size,
     float * swap; 
     size_t i, j;
     for (i = 0; i < itt; i++) {
-        //#pragma omp parallel for private(j)
+        #pragma omp parallel for private(j)
         for (j = 0; j < size; j++) {
             float Bv, Av, Xv; 
             Bv = b[j]; 

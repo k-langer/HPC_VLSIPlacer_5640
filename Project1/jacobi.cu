@@ -71,6 +71,32 @@ __global__ void jacobi_jacobicu2(float * A, float * bx, float * by, float * Px, 
     Py[j] = (Bvy - Xvy)/Av;
     } 
 }
+__global__ void jacobi_jacobicu2s(float * A, float * bx, float * by, float * Px, float * Py, int size) {
+    int j = blockIdx.x * blockDim.x + threadIdx.x;
+    extern __shared__ float P_s[]; 
+    float * Px_s = P_s; 
+    float * Py_s = P_s + size; 
+    if (j < size) {
+    Px_s[j] = Px[j]; 
+    Py_s[j] = Py[j]; 
+    __syncthreads(); 
+    float Bvx, Bvy, Av, Xvx, Xvy; 
+    Bvx = bx[j]; 
+    Bvy = by[j]; 
+    Av = A[j*size+j]; 
+    Xvx = 0.0f;
+    Xvy = 0.0f; 
+    for (int k = 0; k < size; k++) {
+        Xvx += A[j*size+k]*Px_s[k];
+        Xvy += A[j*size+k]*Py_s[k];
+    }
+    Xvx -= Av*Px[j];
+    Xvy -= Av*Py[j];
+    Px[j] = (Bvx - Xvx)/Av;
+    Py[j] = (Bvy - Xvy)/Av;
+    } 
+}
+
 
 /*
 __global__ void jacobi_jacobicu(float * A, float * b, float * P, int size) {
@@ -140,6 +166,14 @@ extern "C" void jacobi_jacobi2(float * resultx, float * resulty, float * A, floa
     cudaMemcpy(Py_d, resulty, size*sizeof(float), cudaMemcpyHostToDevice); 
     cudaMemcpy(Xy_d, resulty, size*sizeof(float), cudaMemcpyHostToDevice); 
     for (int i = 0; i < itt; i++) {
+        /*
+        if (2*(sizeof(float)*size) < 48000) {
+            //use shared memory
+            jacobi_jacobicu2s<<<size/16 + 1,16,2*(size*sizeof(float))>>>(A_d, bx_d, by_d, Px_d, Py_d, size); 
+        } else {
+            jacobi_jacobicu2<<<size/16 + 1,16>>>(A_d, bx_d, by_d, Px_d, Py_d, size); 
+        }
+        */
         jacobi_jacobicu2<<<size/16 + 1,16>>>(A_d, bx_d, by_d, Px_d, Py_d, size); 
         swap = Px_d; 
         Px_d = Xx_d; 

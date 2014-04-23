@@ -1,8 +1,7 @@
 CC=gcc
 NVCC=nvcc
 #OPT=-O3 -march=corei7 -mtune=corei7-avx  
-#OPT=-O3
-#CFLAGS = -lm
+OPT=-O3
 CFLAGS=-Wall -std=gnu99 -Wno-unused-result -lm  
 DEBUG=-g -ggdb -pg
 CPARFLAGS=-fopenmp
@@ -13,7 +12,7 @@ PRODUCTION=
 TARGET=placer
 TARGETCU=placer_cu
 INC=-Iinc/
-L=-L /usr/local/cuda/lib64/ -lcudart
+L=-L /usr/local/cuda/lib64/ -lcudart -lcuda
 OBJS = parser.o \
 	   solver.o \
 	   netlist.o \
@@ -43,6 +42,6 @@ solver_cu.o : jacobi.o solver.c
 	$(NVCC) $(INC) $(CUARCH) -dc  $<
  
 clean:
-	rm -f *.o parser placer
+	rm -f *.o parser placer placer_cu
 	rm -f qsub\.*
 	rm -f core*
