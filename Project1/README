@@ -1,15 +1,20 @@
 About: 
     This program takes a netlist and produces a netlist annotated with logically
     placed gates. Because optimal placement is a n! problem, this approximates 
-    placement using annealing. Soon it will also use numerical methods to aid the
-    stochastic ones. 
+    placement using annealing or quadratic placement. 
 
 Install: 
     - copy a netlist into ./ and call it netlist.txt
-    - make 
+    - make clean && make 
 
 Run:
-    ./placer netlist.txt
+    # Production version
+    ./placer netlist.txt $threads
+    # Annealer version 
+    ./placer_an netlist.txt $threads
+    # CUDA version
+    ./placer_cu netlist.txt
+    
 
 View results:
     ./display/draw_layout.py 
