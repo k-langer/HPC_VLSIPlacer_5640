@@ -1,4 +1,4 @@
-CC=icc
+CC=gcc
 NVCC=nvcc
 #OPT=-O3 -march=corei7 -mtune=corei7-avx  
 D= #-D ANNEALER -D PRODUCTION
