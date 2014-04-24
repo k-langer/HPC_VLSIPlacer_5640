@@ -1,7 +1,7 @@
 CC=gcc
 NVCC=nvcc
 #OPT=-O3 -march=corei7 -mtune=corei7-avx  
-D= #-D ANNEALER -D PRODUCTION
+D= -D BENCHMARK -D PRODUCTION #-D ANNEALER
 OPT=-O3
 CFLAGS=-Wall -std=gnu99 -lm#-Wno-unused-result -lm  
 DEBUG=-g -ggdb -pg

@@ -12,10 +12,10 @@ int rand_init() {
     * I did breif timing and QoR studies and it seems 
     * like they provide similar results
     */
-    #ifdef PRODUCTION
-    srand(time(NULL));
-    #else 
+    #ifdef BENCHMARK
     srand(777);
+    #else 
+    srand(time(NULL));
     #endif
     #endif
     return TRUE; 
