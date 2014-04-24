@@ -8,6 +8,6 @@
 work=~/EECE5640/Project1/
 cd $work
 
-./placer
+./placer large_netlist.txt 1
 
 #watch output.txt

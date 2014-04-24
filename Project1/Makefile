@@ -1,8 +1,9 @@
-CC=gcc
+CC=icc
 NVCC=nvcc
 #OPT=-O3 -march=corei7 -mtune=corei7-avx  
+D= #-D ANNEALER -D PRODUCTION
 OPT=-O3
-CFLAGS=-Wall -std=gnu99 -Wno-unused-result -lm  
+CFLAGS=-Wall -std=gnu99 -lm#-Wno-unused-result -lm  
 DEBUG=-g -ggdb -pg
 CPARFLAGS=-fopenmp
 #RDRAND=-D IVYHASWELL
@@ -10,7 +11,9 @@ CPARFLAGS=-fopenmp
 CUARCH = -arch=sm_20
 PRODUCTION=
 TARGET=placer
+
 TARGETCU=placer_cu
+TARGETAN=placer_an
 INC=-Iinc/
 L=-L /usr/local/cuda/lib64/ -lcudart -lcuda
 OBJS = parser.o \
@@ -25,15 +28,20 @@ CUOBJS = jacobi.o \
 	     solver.o
 
 all: $(TARGET)
-cuda: $(TARGETCU)    
+cuda: $(TARGETCU)   
+annealer: $(TARGETAN) 
 %.o: %.c
-	$(CC) $(INC) $(CUDA) $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) -c $<
+	$(CC) $(INC) $(D) $(CUDA) $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) -c $<
 
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) 
 
 $(TARGETCU): $(OBJS) $(CUOBJS)
 	$(CC) -o $@ $(L) $^ $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) 
+
+$(TARGETAN): $(OBJS)
+	$(CC) $(INC) $(OPT) $(CFLAGS) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) -c main.c
+	$(CC) -o $@ $^ $(OPT) $(ANNEALER) $(CFLAGS) $(RDRAND) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) 
 
 solver_cu.o : jacobi.o solver.c
 	$(CC) $(INC) -D CUDA $(OPT) $(CFLAGS) $(CPARFLAGS) $(PRODUCTION) $(DEBUG) -c solver.c

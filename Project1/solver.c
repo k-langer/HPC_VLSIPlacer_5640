@@ -136,10 +136,21 @@ float * solver_jacobi(float * restrict A, float * restrict b, unsigned int size,
             #ifdef OPT
             float *P = __builtin_assume_aligned(P, 32);
             float *A = __builtin_assume_aligned(A, 32);
-            #endif
+            for (int k = 0; k < size; k+=8) {
+                Xv += A[j*size+k]*P[k];
+                Xv += A[j*size+k+1]*P[k+1];
+                Xv += A[j*size+k+2]*P[k+2];
+                Xv += A[j*size+k+3]*P[k+3];
+                Xv += A[j*size+k+4]*P[k+4];
+                Xv += A[j*size+k+5]*P[k+5];
+                Xv += A[j*size+k+6]*P[k+6];
+                Xv += A[j*size+k+7]*P[k+7];
+            }
+            #else
             for (int k = 0; k < size; k++) {
                 Xv += A[j*size+k]*P[k];
             }
+            #endif
             Xv -= Av*P[j];
             P[j] = (Bv - Xv)/Av; 
         }
